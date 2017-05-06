@@ -1,0 +1,9 @@
+// Program with semantic errors.
+
+void main(void) {
+    int x;
+    int f;
+    x = input();
+    f = factorial(x); // ERROR: function 'factorial' is undeclared.
+    output(f);
+}

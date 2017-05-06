@@ -1,0 +1,21 @@
+/* Basic arithmetic operations.
+ * One test for each op.
+**/
+
+void main(void) {
+    write("4 + 2 = ");
+    output(4 + 2);
+    write("\n");
+
+    write("5 - 2 = ");
+    output(5 - 2);
+    write("\n");
+
+    write("4 * 2 = ");
+    output(4 * 2);
+    write("\n");
+
+    write("4 / 2 = ");
+    output(4 / 2);
+    write("\n");
+}

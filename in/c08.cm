@@ -1,0 +1,20 @@
+/* Program that checks a given age.
+ * < 18: Minor
+ * >= 60: Elder
+ * other: Adult
+**/
+
+void main(void) {
+    int age;
+
+    age = input();
+    if (age >= 18) {
+        if (age < 60) {
+            write("Adult\n");
+        } else {
+            write("Elder\n");
+        }
+    } else {
+        write("Minor\n");
+    }
+}

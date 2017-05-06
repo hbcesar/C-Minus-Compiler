@@ -1,0 +1,6 @@
+// Program with syntax errors.
+
+void main(void) {
+    int x;
+    x = 0 // ERROR: missing semi-colon.
+}

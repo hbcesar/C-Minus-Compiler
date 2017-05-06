@@ -1,0 +1,11 @@
+// Simple function test.
+
+int sum(int x, int y) {
+    int z;
+    z = x + y;
+    return z;
+}
+
+void main(void) {
+    output(sum(3, 2));
+}

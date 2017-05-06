@@ -1,0 +1,10 @@
+/* Basic I/O test program.
+ * Echoes input.
+**/
+
+void main(void) {
+    int x;
+    x = input();
+    write("x = ");
+    output(x);
+}

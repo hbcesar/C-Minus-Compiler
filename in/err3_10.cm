@@ -1,0 +1,10 @@
+// Program with semantic errors.
+
+void f(void) {
+    return 1;
+}
+
+void main(void) {
+    int f; // OK: variable and function names can be the same.
+           // This should not trigger a semantic error.
+}

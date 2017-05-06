@@ -1,0 +1,7 @@
+// Program with semantic errors.
+
+void main(void) {
+    int x;
+    int y;
+    int x; // ERROR: variable redeclaration.
+}

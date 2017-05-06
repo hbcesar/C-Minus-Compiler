@@ -1,0 +1,15 @@
+// Basic if-else test.
+
+void main(void) {
+    if (0 < 1) {
+        write("OK! 1\n");
+    } else {
+        write("Huh? 1\n");
+    }
+
+    if (0 > 1) {
+        write("OK! 2\n");
+    } else {
+        write("Huh? 2\n");
+    }
+}

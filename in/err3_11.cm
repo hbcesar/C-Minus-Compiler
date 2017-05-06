@@ -1,0 +1,9 @@
+// Program with semantic errors.
+
+void main(void) {
+    int x;
+    x = input();
+    if (x) { // ERROR: test expression must give a Boolean result.
+        write("Hello!\n");
+    }
+}

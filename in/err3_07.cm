@@ -1,0 +1,6 @@
+// Program with semantic errors.
+
+void main(void) {
+    int x;
+    x = y + 42; // ERROR: undeclared variable 'y'.
+}

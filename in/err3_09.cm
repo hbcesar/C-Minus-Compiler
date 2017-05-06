@@ -1,0 +1,11 @@
+// Program with semantic errors.
+
+int sum(int x, int y) {
+    return x + y;
+}
+
+void main(void) {
+    int s;
+    s = sum(2); // ERROR: not enough arguments to 'sum'.
+    output(s);
+}

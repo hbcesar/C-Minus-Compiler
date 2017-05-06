@@ -1,0 +1,11 @@
+// Program with semantic errors.
+
+void f(void) {
+    int x;
+    return 1;
+}
+
+void main(void) {
+    int x; // OK: Each variable 'x' has its own scope. This should not
+           // trigger a semantic error.
+}

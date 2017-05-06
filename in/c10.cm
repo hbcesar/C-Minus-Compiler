@@ -1,0 +1,18 @@
+/* Sample program in C-Minus language.
+ * Computes a factorial.
+**/
+
+void main(void) {
+    int x;
+    int fact;
+
+    x = input(); // Input an integer.
+    if (x > 0) { // Don't compute if x <= 0.
+        fact = 1;
+        while (x != 0) {
+            fact = fact * x;
+            x = x - 1;
+        }
+        output(fact); // Output factorial of x.
+    }
+}

@@ -1,0 +1,7 @@
+// Another silly test program.
+
+void main(void) {
+    int x;
+    x = 4 + 2;
+    output(x);
+}

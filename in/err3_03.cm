@@ -1,0 +1,10 @@
+// Program with semantic errors.
+
+void f(int x) {
+    int x; // ERROR: local variable has the same name as formal parameter.
+    return 1;
+}
+
+void main(void) {
+
+}

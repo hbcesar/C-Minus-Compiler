@@ -1,0 +1,6 @@
+// Program with semantic errors.
+
+void main(void) {
+    int m1[2];
+    output(m1); // ERROR: can't print arrays directly.
+}

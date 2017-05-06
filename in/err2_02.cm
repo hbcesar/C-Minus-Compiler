@@ -1,0 +1,9 @@
+// Program with syntax errors.
+
+void main(void) {
+    int x;
+    if (x == 2) {
+        write("Two!\n");
+    write("Inside or out???\n");
+    // ERROR: missing closing bracket of if statement.
+}

@@ -1,0 +1,12 @@
+// Basic loop test.
+
+void main(void) {
+    int x;
+
+    x = 5;
+    while (x > 0) {
+        output(x);
+        write("\n");
+        x = x - 1;
+    }
+}

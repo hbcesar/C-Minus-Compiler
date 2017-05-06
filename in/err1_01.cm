@@ -1,0 +1,6 @@
+// Program with lexical errors.
+
+void main(void) {
+    int x21;
+    int _y; // ERROR: IDs can't have underscores.
+}

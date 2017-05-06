@@ -1,0 +1,13 @@
+// Program with semantic errors.
+
+int f(int x) {
+    return 1;
+}
+
+int f(void) { // ERROR: function redeclaration.
+    return 0;
+}
+
+void main(void) {
+
+}

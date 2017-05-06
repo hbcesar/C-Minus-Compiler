@@ -1,0 +1,7 @@
+// Program with syntax errors.
+
+void main(void) {
+    while 0 < 1 { // ERROR: condition must be surounded by parenthesis.
+        write("Loooop!\n");
+    }
+}

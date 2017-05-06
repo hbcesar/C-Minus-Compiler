@@ -1,0 +1,7 @@
+// Program with semantic errors.
+
+void main(void) {
+    int x;
+    x = input();
+    write(x); // ERROR: function 'write' expects a string, should use 'output'.
+}

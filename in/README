@@ -1,0 +1,19 @@
+Este diretório contém vários arquivos com programas escritos em C-Minus para
+teste.
+
+Os tipos dos arquivos são identificados pelos nomes:
+
+c*.cm : arquivos com programas válidos. Eles devem ser compilados e executados
+        adequadamente no simulador CMM.
+
+err1_*.cm: Erros de construções léxicas são considerados erros de tipo 1.
+           Esses erros devem ser detectados pelo analisador léxico (scanner).
+           A compilação desses programas não geram executáveis (i.e., falha).
+
+err2_*.cm: Erros de construções sintáticas são considerados erros de tipo 2.
+           Esses erros devem ser detectados pelo analisador sintático (parser).
+           A compilação desses programas não geram executáveis (i.e., falha).
+
+err3_*.cm: Erros semânticos são considerados erros de tipo 3.
+           Esses erros devem ser detectados pelo analisador semântico.
+           A compilação desses programas não geram executáveis (i.e., falha).

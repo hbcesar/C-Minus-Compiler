@@ -1,0 +1,9 @@
+// Program with semantic errors.
+
+int input(void) { // ERROR: redeclaration of primitive function.
+    return 0;
+}
+
+void main(void) {
+
+}

@@ -1,0 +1,8 @@
+// Program with semantic errors.
+
+void main(void) {
+    int m1[2];
+    int m2[2];
+
+    m1 = m2; // ERROR: can't assign arrays.
+}
