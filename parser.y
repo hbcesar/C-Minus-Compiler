@@ -16,28 +16,29 @@
 
 int yylex(void);
 void yyerror(char const *s);
+
+extern int yylineno;
+
 %}
 
 %define api.value.type {unsigned int}
 
-%token ENTER ID
+//Tokens para palavras e caracteres reservados, lacos de repeticao e desvios condicionais
 %token INT VOID
 %token COMMA SEMI 
-%token NUM STRING
-
+%token STRING
 %token IF WHILE
-
-%token LPAREN LBRACE LBRACK 
-
 %token INPUT OUTPUT WRITE ASSIGN RETURN
+%token LPAREN LBRACE LBRACK 
+%token NUM ID
 
+//Definicao de regras de precedencia (precedence e left)
 %precedence ELSE
-
 %precedence RPAREN
 %precedence RBRACE
 %precedence RBRACK
 
-%left LT LE GT GE EQ NEQ
+%left NEQ EQ LT LE GT GE
 %left PLUS MINUS
 %left TIMES OVER
 
@@ -178,33 +179,25 @@ arg-list:
 | arith-expr
 ;
 
-bool-expr:
-  arith-expr bool-op arith-expr
+//Regra foi unificada para eliminar shift-reduce
+bool-expr: arith-expr LT arith-expr
+| arith-expr LE arith-expr
+| arith-expr GT arith-expr
+| arith-expr GE arith-expr
+| arith-expr EQ arith-expr
+| arith-expr NEQ arith-expr
 ;
 
-bool-op:
-  LT
-| LE
-| GT
-| GE
-| EQ
-| NEQ
-;
-
-arith-expr:
-  arith-expr arith-op arith-expr
-| LPAREN arith-expr RPAREN
-| lval
+//Regra foi unificada para eliminar shift-reduce
+ arith-expr: NUM
 | input-call
+| lval
 | user-func-call
-| NUM
-;
-
-arith-op:
-  PLUS
-| MINUS
-| TIMES
-| OVER
+| LPAREN  arith-expr RPAREN
+| arith-expr PLUS  arith-expr
+| arith-expr MINUS  arith-expr
+| arith-expr TIMES  arith-expr
+| arith-expr OVER  arith-expr
 ;
 
 %%
@@ -217,8 +210,8 @@ int main() {
 	return 0;
 }
 
-
+//Trata erro e sai do programa
 void yyerror (char const *s) {
-	//extern int yylineno;
 	printf("PARSE ERROR (%d): %s\n", yylineno, s);
+	exit(0);
 }

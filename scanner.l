@@ -2,6 +2,7 @@
 %option noyywrap
 %option nounput
 %option noinput
+%option yylineno
 
 %{ /* Implementa a linguagem C-Minus */
 #include "parser.h"
@@ -49,7 +50,7 @@ void imprimir(int linha, char* lexema, char* token){
 "!="                    { process_token(NEQ); }
 "="                   	{ process_token(ASSIGN); }
 
-";"                     { process_token(SEMI); } /* Bloco 3: Operadores aritméticos e de comparação */
+";"                     { process_token(SEMI); } /* Bloco 3: Caracteres especiais */
 ","                     { process_token(COMMA); }
 "("                     { process_token(LPAREN); }
 ")"                     { process_token(RPAREN); }
