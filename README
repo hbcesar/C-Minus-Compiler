@@ -1,0 +1,10 @@
+
+$ make
+bison parser.y
+flex scanner.l
+gcc -Wall -o parser scanner.c parser.c bt.c -ly
+Done.
+
+$ ./parser <<< "2+4*3-5/7" > out.dot
+
+$ dot -Tpdf out.dot -o out.pdf
