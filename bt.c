@@ -1,22 +1,8 @@
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h> //Retirado de: https://en.wikipedia.org/wiki/Variadic_function#Variadic_functions_in_C.2C_Objective-C.2C_C.2B.2B.2C_and_D
 #include "bt.h"
-
-#define NUMCHLD 10
-
-struct node {
-    NodeKind kind;
-    int data;
-    BT* children;
-    int children_count;
-};
 
 BT* create_node(NodeKind kind) {
     BT* node = (BT*) malloc(sizeof(BT));
     node->kind = kind;
-    node->children = (BT*) malloc(NUMCHLD * sizeof(BT));
     node->children_count = 0;
     node->data = -1;
 
@@ -61,16 +47,19 @@ BT* add_child(BT* node, BT* child){
 
 void print_node(BT *node, int level) {
     int i;
-    char s[256];
-    sprintf(s, "%d", node->data);
+    char* s = node2str(node);
+
 
     if (node->data == -1) {
         printf("%d: Node -- Addr: %p -- Text: %s -- Count: %d\n", level, node,
-        node2str(node->kind), node->children_count);
+        s, node->children_count);
   
     } else {
+        char d[64];
+        sprintf(d, "%d", node->data);
+        strcat(s, d);
         printf("%d: Node -- Addr: %p -- Text: %s -- Count: %d\n", level, node,
-        strcat(node2str(node->kind), strcat(",", s)), node->children_count);
+        s, node->children_count);
     }
 
     for (i = 0; i < node->children_count; i++) {
@@ -104,9 +93,9 @@ int nr;
 
 int print_node_dot(BT *node) {
     int i;
-    char s[256];
+    char* s = node2str(node);
     int my_nr = nr++;
-    node2str(node, s);
+    
 
     if(node->data != -1){
         sprintf(s, ",%d", node->data);
@@ -130,9 +119,11 @@ void print_dot(BT *tree) {
 }
 
 // Dot output.
-void node2str(BT *node, char *s) {
+char* node2str(BT *node) {
+    char* s = (char*)malloc(256*sizeof(char));
+
     switch(node->kind) {
-        case NUMBER_NODE:               sprintf(s, "%d", "NUM"; break;
+        case NUMBER_NODE:               sprintf(s, "%s", "NUM"); break;
         case PLUS_NODE:                 sprintf(s, "%s", "+"); break;
         case MINUS_NODE:                sprintf(s, "%s", "-"); break;
         case TIMES_NODE:                sprintf(s, "%s", "*"); break;
@@ -169,4 +160,6 @@ void node2str(BT *node, char *s) {
 		case VOID_NODE:					sprintf(s, "%s", "VOID"); break;
         default: 						sprintf(s, "%s", "ERRO"); break;
     }
+
+    return s;
 }

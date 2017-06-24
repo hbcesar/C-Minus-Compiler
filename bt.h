@@ -4,8 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h> //Retirado de: https://en.wikipedia.org/wiki/Variadic_function#Variadic_functions_in_C.2C_Objective-C.2C_C.2B.2B.2C_and_D
+#include <string.h>
 
-#define NUMCHLD 10
+#define NUMCHILD 50
 
 typedef enum {
 	NUMBER_NODE,
@@ -45,16 +46,17 @@ typedef enum {
 	VOID_NODE,
 } NodeKind;
 
+typedef struct node BT;
 
-typedef struct node {
+struct node {
     NodeKind kind;
     int data;
-    BT* children;
+    BT* children[NUMCHILD];
     int children_count;
-} BT;
+};
 
 BT* create_node(NodeKind kind);
-BT* new_leaf(NodeKind kind, int data, char* string);
+BT* new_leaf(NodeKind kind, int data);
 BT* new_node(NodeKind kind, int count, ...);
 BT* add_child(BT* node, BT* child);
 
@@ -62,9 +64,9 @@ void print_node(BT *node, int level);
 void print_tree(BT *tree);
 void free_tree(BT *tree);
 
-void print_node_dot(BT *tree);
+int print_node_dot(BT *tree);
 void print_dot(BT *tree);
 
-void node2str(BT *node, char *s);
+char* node2str(BT *node);
 
 #endif

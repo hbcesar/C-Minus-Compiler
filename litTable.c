@@ -26,13 +26,13 @@ int literal_exists(LiteralsTable* lt, char* literal){
 }
 
 int add_literal(LiteralsTable* lt, char* literal){
-	if(literalExists(lt, literal)){
+	if(literal_exists(lt, literal)){
 		return -1;
 	}
 
 	LiteralNode* newNode = (LiteralNode*)malloc(sizeof(LiteralNode));
 	strcpy(newNode->literal, literal);
-	newNode->next = NULL;
+	newNode->prox = NULL;
 
 	if(lt->table == NULL) {
 		lt->table = newNode;
@@ -51,6 +51,7 @@ int get_literal_index(LiteralsTable* lt, char* literal){
 	LiteralNode* llist = lt->table;
 	int i = 0;
 
+
 	while (llist != NULL) {
 		if (strcmp(llist->literal, literal) == 0) {
 			return i;
@@ -62,7 +63,7 @@ int get_literal_index(LiteralsTable* lt, char* literal){
 	return 0;
 }
 
-char* get_literal(LiteralsTable lt, int i){
+char* get_literal(LiteralsTable* lt, int i){
 	LiteralNode* llist = lt->table;
 	int j;
 
@@ -70,7 +71,7 @@ char* get_literal(LiteralsTable lt, int i){
 		llist = llist->prox;
 	}
 
-	return llist;
+	return llist->literal;
 }
 
 void print_literals_table(LiteralsTable* lt){
