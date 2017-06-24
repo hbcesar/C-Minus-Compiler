@@ -9,6 +9,14 @@ BT* create_node(NodeKind kind) {
     return node;
 }
 
+BT* create_id_node(char* text){
+    BT* node = create_node(ID_NODE);
+    node->text = (char*) malloc(strlen(text) * sizeof(char));
+    strcpy(node->text, text);
+
+    return node;
+}
+
 BT* new_leaf(NodeKind kind, int data) {
     BT *leaf = create_node(kind);
     leaf->data = data;

@@ -248,51 +248,47 @@ int main() {
 
 //precisa recriar as funcoes aqui chamadas, ex getSymbol name vai usar das funcoes lookup_var e get_name da biblioteca que o prof deu
 void verify_symbol(int type, BT* node, int line, int escopo, int aridadeChamada) {
-  char* node_name = node2str(node);
-
   if(type == VARIABLE){
-		if(!lookup_var(vt, node_name)){
-			printf("SEMANTIC ERROR (%d): variable '%s' was not declared.\n", line, node_name);
+		if(!lookup_var(vt, node->text)){
+			printf("SEMANTIC ERROR (%d): variable '%s' was not declared.\n", line, node->text);
 			exit(1);
 		}
   }
 
 	if(type == FUNCTION){
-		if(!lookup_var(ft, node_name)){
-			printf("SEMANTIC ERROR (%d): function '%s' was not declared.\n", line, node_name);
+		if(!lookup_var(ft, node->text)){
+			printf("SEMANTIC ERROR (%d): function '%s' was not declared.\n", line, node->text);
 			exit(1);
 		}
 
-		int aridadeDeclarada = get_symbol_arity(ft, node_name);
+		int aridadeDeclarada = get_symbol_arity(ft, node->text);
 
 		if(aridadeChamada != aridadeDeclarada){
-			printf("SEMANTIC ERROR (%d): function '%s' was called with %d arguments but declared with %d parameters.\n", line, node_name, aridadeChamada, aridadeDeclarada);
+			printf("SEMANTIC ERROR (%d): function '%s' was called with %d arguments but declared with %d parameters.\n", line, node->text, aridadeChamada, aridadeDeclarada);
 			exit(1);
 		}
 	}
 }
 
 void new_symbol(int type, BT* node, int line, int escopo, int aridadeDeclarada) {
-  char* node_name = node2str(node);
-
   if(type == VARIABLE){
-		if (lookup_var(vt, node_name) && escopo == get_symbol_escope(vt, node_name)) {
+		if (lookup_var(vt, node->text) && escopo == get_symbol_escope(vt, node->text)) {
         printf("SEMANTIC ERROR (%d): variable '%s' already declared at line %d.\n",
-            line, node_name, lookup_var(vt, node_name));
+            line, node->text, get_symbol_index(vt, node->text, escopo));
         exit(1);
     }
 
-    add_var(vt, node_name, line, escopo, aridadeDeclarada);
+    add_var(vt, node->text, line, escopo, aridadeDeclarada);
   }
 
   if(type == FUNCTION){
-      if (lookup_var(ft, node_name)) {
+      if (lookup_var(ft, node->text)) {
         printf("SEMANTIC ERROR (%d): function '%s' already declared at line %d.\n",
-            line, node_name, lookup_var(ft, node_name));
+            line, node->text, get_symbol_index(ft, node->text, escopo));
         exit(1);
     }
 
-    add_var(ft, node_name, line, escopo, aridadeDeclarada);
+    add_var(ft, node->text, line, escopo, aridadeDeclarada);
 
   }
 }

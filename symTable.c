@@ -13,6 +13,10 @@ SymbolsTable* create_sym_table(void){
 }
 
 int lookup_var(SymbolsTable* st, char* symbol){
+	if(symbol == NULL){
+		return 0;
+	}
+
 	SymbolNode* slist = st->table;
 
 	while (slist != NULL) {
@@ -39,32 +43,34 @@ char* get_name(SymbolsTable* st, int i){
 
 int add_var(SymbolsTable* st, char* symbol, int line, int escopo, int aridade){
 
-	SymbolNode* node = (SymbolNode*) malloc(sizeof(SymbolNode));
+	if (!lookup_var(st, symbol) || get_symbol_escope(st, symbol) != escopo) {
+		SymbolNode* node = (SymbolNode*) malloc(sizeof(SymbolNode));
 
-	strcpy(node->symbol, symbol);
-	node->line = line;
+		strcpy(node->symbol, symbol);
+		node->line = line;
 
-	if(escopo != -1){
-		node->escopo = escopo;
-	}
+		if(escopo != -1){
+			node->escopo = escopo;
+		}
 
-	if(aridade != -1){
-		node->aridade = aridade;
-	}
+		if(aridade != -1){
+			node->aridade = aridade;
+		}
 
-	node->prox = NULL;
+		node->prox = NULL;
 
-	if(st->table == NULL) {
-		st->table = node;
-		st->fim = node;
-	} else{
-		st->fim->prox = node;
-		st->fim = node;
-	}
+		if(st->table == NULL) {
+			st->table = node;
+			st->fim = node;
+		} else{
+			st->fim->prox = node;
+			st->fim = node;
+		}
 
-	st->count++;
-
-	return 0;
+    	return st->count++;
+  	} else {
+    	return get_symbol_index(st, symbol, escopo);
+  	}
 }
 
 int get_line(SymbolsTable* st, char* symbol){

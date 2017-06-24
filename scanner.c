@@ -992,7 +992,7 @@ YY_RULE_SETUP
 case 36:
 YY_RULE_SETUP
 #line 58 "scanner.l"
-{ return ID; }
+{ yylval = create_id_node(yytext); return ID; }
 	YY_BREAK
 case 37:
 /* rule 37 can match eol */

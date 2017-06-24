@@ -55,7 +55,7 @@ extern LiteralsTable *lt;
 "}"   				           { return RBRACE; }
 
 [0-9]+                   	   { return NUM; } /* Bloco 4: tokens que admitem mais de um lexema */
-[A-Za-z][A-Za-z0-9]*     	   { return ID; }
+[A-Za-z][A-Za-z0-9]*     	   { yylval = create_id_node(yytext); return ID; }
 \"([^\"]*)\"             	   { add_literal(lt, yytext); return STRING; }
 	   
 [ \n\t]+                 	   { }	   

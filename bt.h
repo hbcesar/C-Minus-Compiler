@@ -53,9 +53,11 @@ struct node {
     int data;
     BT* children[NUMCHILD];
     int children_count;
+    char* text;
 };
 
 BT* create_node(NodeKind kind);
+BT* create_id_node(char* text);
 BT* new_leaf(NodeKind kind, int data);
 BT* new_node(NodeKind kind, int count, ...);
 BT* add_child(BT* node, BT* child);
