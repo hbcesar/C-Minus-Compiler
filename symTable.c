@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -30,22 +29,12 @@ int lookup_var(SymbolsTable* st, char* symbol){
 	return 0;
 }
 
-char* get_name(SymbolsTable* st, int i){
-	SymbolNode* slist = st->table;
-	int j;
-
-	for(j = 0; j < i; j++){
-		slist = slist->prox;
-	}
-
-	return slist->symbol;
-}
-
 int add_var(SymbolsTable* st, char* symbol, int line, int escopo, int aridade){
 
 	if (!lookup_var(st, symbol) || get_symbol_escope(st, symbol) != escopo) {
 		SymbolNode* node = (SymbolNode*) malloc(sizeof(SymbolNode));
 
+		node->symbol = (char*) malloc(strlen(symbol) * sizeof(char));
 		strcpy(node->symbol, symbol);
 		node->line = line;
 
@@ -67,10 +56,11 @@ int add_var(SymbolsTable* st, char* symbol, int line, int escopo, int aridade){
 			st->fim = node;
 		}
 
-    	return st->count++;
+		return st->count++;
+
   	} else {
     	return get_symbol_index(st, symbol, escopo);
-  	}
+  	} 
 }
 
 int get_line(SymbolsTable* st, char* symbol){
@@ -125,8 +115,10 @@ int get_symbol_index(SymbolsTable* st, char* symbol, int escopo){
 				return i;
 			}
 
-		} else if ((strcmp(slist->symbol, symbol) == 0) && (slist->escopo == escopo)) {
-			return i;
+		} else {
+			if ((strcmp(slist->symbol, symbol) == 0) && (slist->escopo == escopo)) {
+				return i;
+			}
 		}
 	
 
@@ -134,7 +126,7 @@ int get_symbol_index(SymbolsTable* st, char* symbol, int escopo){
 		i++;
 	}
 
-	return 0;
+	return -1;
 }
 
 void print_variables_table(SymbolsTable* st){

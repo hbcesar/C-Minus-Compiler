@@ -3,11 +3,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdarg.h> //Retirado de: https://en.wikipedia.org/wiki/Variadic_function#Variadic_functions_in_C.2C_Objective-C.2C_C.2B.2B.2C_and_D
+#include <stdarg.h>
 #include <string.h>
 
-#define NUMCHILD 50
+#define NUMCHILD 20
 
+//numeral com tipos de nós possíveis na árvore de nó
 typedef enum {
 	NUMBER_NODE,
 	PLUS_NODE,
@@ -48,6 +49,9 @@ typedef enum {
 
 typedef struct node BT;
 
+//nó da árvore
+//contem tipo do elemento (enum), vetor de tamanho fixo para filhos, contador para numero de filhos
+//variavel contendo texto para caso de ID_NODE (nome da variavel ou da funcao)
 struct node {
     NodeKind kind;
     int data;
@@ -56,19 +60,33 @@ struct node {
     char* text;
 };
 
+//cria no da arvore
 BT* create_node(NodeKind kind);
-BT* create_id_node(char* text);
+
+//cria apenas nos do tipo ID_NODE
+BT* create_lit_node(NodeKind kind, int data, char* text);
+
+//cria novo nó dado numero da linha
 BT* new_leaf(NodeKind kind, int data);
+
+//cria nó com numero variável de filhos (achei isso um máximo)
 BT* new_node(NodeKind kind, int count, ...);
+
+//adiciona UM filho ao nó
 BT* add_child(BT* node, BT* child);
 
+//imprime nó bonitinho
 void print_node(BT *node, int level);
-void print_tree(BT *tree);
-void free_tree(BT *tree);
-
 int print_node_dot(BT *tree);
 void print_dot(BT *tree);
 
+//imprime arvore
+void print_tree(BT *tree);
+
+//libera memória alocada para árvore
+void free_tree(BT *tree);
+
+//transforma enum em string para imprimir bonitinho
 char* node2str(BT *node);
 
 #endif

@@ -9,9 +9,9 @@ BT* create_node(NodeKind kind) {
     return node;
 }
 
-BT* create_id_node(char* text){
-    BT* node = create_node(ID_NODE);
-    node->text = (char*) malloc(strlen(text) * sizeof(char));
+BT* create_lit_node(NodeKind kind, int data, char* text){
+    BT* node = new_leaf(kind, data);
+    node->text = (char*) malloc((strlen(text))*sizeof(char));
     strcpy(node->text, text);
 
     return node;
@@ -99,14 +99,19 @@ void free_tree(BT *tree) {
 // Dot output.
 int nr;
 
-int print_node_dot(BT *node) {
+int print_node_dot(BT* node) {
     int i;
     char* s = node2str(node);
     int my_nr = nr++;
-    
 
-    if(node->data != -1){
-        sprintf(s, ",%d", node->data);
+    if(node->kind == NUM_NODE) {
+        char temp[64];
+        sprintf(temp, ",%s", node->text);
+        strcat(s, temp);
+    } else if(node->data != -1){
+        char temp[64];
+        sprintf(temp, ",%d", node->data);
+        strcat(s, temp);
     }
 
     printf("node%d[label=\"%s\"];\n", my_nr, s);
@@ -119,7 +124,7 @@ int print_node_dot(BT *node) {
     return my_nr;
 }
 
-void print_dot(BT *tree) {
+void print_dot(BT* tree) {
     nr = 0;
     printf("digraph {\ngraph [ordering=\"out\"];\n");
     print_node_dot(tree);
@@ -127,8 +132,8 @@ void print_dot(BT *tree) {
 }
 
 // Dot output.
-char* node2str(BT *node) {
-    char* s = (char*)malloc(256*sizeof(char));
+char* node2str(BT* node) {
+    char* s = (char*)malloc(64 * sizeof(char));
 
     switch(node->kind) {
         case NUMBER_NODE:               sprintf(s, "%s", "NUM"); break;
@@ -141,8 +146,8 @@ char* node2str(BT *node) {
 		case FUNC_HEADER_NODE:		    sprintf(s, "%s", "func-header"); break;
 		case FUNC_BODY_NODE:			sprintf(s, "%s", "func-body"); break;
 		case VAR_LIST_NODE:				sprintf(s, "%s", "var-list"); break;
-		case PARAM_NODE:				sprintf(s, "%s", "param"); break;
-		case STMT_LIST_NODE:			sprintf(s, "%s", "stmt-list"); break;
+		case PARAM_NODE:				sprintf(s, "%s", "param-list"); break;
+		case STMT_LIST_NODE:			sprintf(s, "%s", "block"); break;
 		case ASSIGN_NODE:				sprintf(s, "%s", "="); break;
 		case IF_NODE:					sprintf(s, "%s", "if"); break;
 		case ELSE_NODE:					sprintf(s, "%s", "else"); break;
@@ -164,8 +169,8 @@ char* node2str(BT *node) {
 		case FCALL_NODE: 				sprintf(s, "%s", "func-call"); break;
 		case SVAR_NODE:					sprintf(s, "%s", "svar"); break;
 		case CVAR_NODE:					sprintf(s, "%s", "cvar"); break;
-		case INT_NODE:					sprintf(s, "%s", "INT"); break;
-		case VOID_NODE:					sprintf(s, "%s", "VOID"); break;
+		case INT_NODE:					sprintf(s, "%s", "int"); break;
+		case VOID_NODE:					sprintf(s, "%s", "void"); break;
         default: 						sprintf(s, "%s", "ERRO"); break;
     }
 

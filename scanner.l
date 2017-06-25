@@ -54,9 +54,9 @@ extern LiteralsTable *lt;
 "{"   				           { return LBRACE; }
 "}"   				           { return RBRACE; }
 
-[0-9]+                   	   { return NUM; } /* Bloco 4: tokens que admitem mais de um lexema */
-[A-Za-z][A-Za-z0-9]*     	   { yylval = create_id_node(yytext); return ID; }
-\"([^\"]*)\"             	   { add_literal(lt, yytext); return STRING; }
+[0-9]+                   	   { yylval = create_lit_node(NUM_NODE, -1, yytext); return NUM; } /* Bloco 4: tokens que admitem mais de um lexema */
+[A-Za-z][A-Za-z0-9]*     	   { yylval = create_lit_node(ID_NODE, -1, yytext); return ID; }
+\"([^\"]*)\"             	   { yylval = create_lit_node(STRING_NODE, add_literal(lt, yytext), yytext); return STRING; }
 	   
 [ \n\t]+                 	   { }	   
 .                        	   { printf("SCANNING ERROR (%d): Unknown symbol %s\n", yylineno, yytext); exit(0); }

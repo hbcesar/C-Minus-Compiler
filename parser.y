@@ -24,19 +24,21 @@
 int yylex(void);
 void yyerror(char const *s);
 
-void verify_symbol(int, BT*, int, int, int);
-void new_symbol(int, BT*, int, int, int);
+void verify_symbol(int, BT*, int, int, int); //verifica simbolo
+void new_symbol(int, BT*, int, int, int); //cria novo simbolo (na tabela de variaveis ou funcao, depende do primeiro parametro)
 
 extern int yylineno;
+extern char* yytext;
 
-BT *tree;
-SymbolsTable *ft;
-SymbolsTable *vt;
-LiteralsTable *lt;
+BT *tree; //arvore
+SymbolsTable *ft; //tabela de funcoes
+SymbolsTable *vt; //tabela de variaveis
+//SymbolsTable *vt_aux; //tabela de variaveis auxiliar
+LiteralsTable *lt; //tabela de literais
 
-int aridadeDeclarada = 0;
-int aridadeChamada = 0;
-int escopo = 0;
+int aridade_declarada = 0; //aridade declarada
+int aridade_chamada = 0; //aridade de chamada de funcao
+int escopo = 0; //escopo de variavel
 
 %}
 
@@ -79,7 +81,7 @@ func-decl:
 ;
 
 func-header:
-  ret-type ID LPAREN params RPAREN											{ new_symbol(FUNCTION, $2, yylineno, -1, aridadeDeclarada); aridadeDeclarada = 0;  $$ = new_node(FUNC_HEADER_NODE, 3, $1, new_leaf(ID_NODE, get_symbol_index(ft, get_name(ft, $2->data), -1)), $4); }
+  ret-type ID LPAREN params RPAREN											{ new_symbol(FUNCTION, $2, yylineno, -1, aridade_declarada); aridade_declarada = 0;  $$ = new_node(FUNC_HEADER_NODE, 3, $1, create_lit_node(ID_NODE, get_symbol_index(ft, $2->text, -1), $2->text), $4); }
 ;
 
 func-body:
@@ -97,7 +99,7 @@ ret-type:
 ;
 
 params:
-  VOID																									{ $$ = create_node(VOID_NODE); }
+  VOID																									{ $$ = create_node(PARAM_NODE); }
 | param-list																						{ $$ = $1; }
 ;
 
@@ -107,8 +109,8 @@ param-list:
 ;
 
 param:
-  INT ID																								{ aridadeDeclarada++; new_symbol(VARIABLE, $2, yylineno, escopo, -1); $$ = new_leaf(SVAR_NODE, get_symbol_index(vt, get_name(vt, $2->data), escopo)); }
-| INT ID LBRACK RBRACK																	{ aridadeDeclarada++; new_symbol(VARIABLE, $2, yylineno, escopo, -1); $$ = new_leaf(CVAR_NODE, get_symbol_index(vt, get_name(vt, $2->data), escopo)); }
+  INT ID																								{ aridade_declarada++; new_symbol(VARIABLE, $2, yylineno, escopo, -1); $$ = new_leaf(SVAR_NODE, get_symbol_index(vt, $2->text, escopo)); }
+| INT ID LBRACK RBRACK																	{ aridade_declarada++; new_symbol(VARIABLE, $2, yylineno, escopo, -1); $$ = new_leaf(CVAR_NODE, get_symbol_index(vt, $2->text, escopo)); }
 ;
 
 var-decl-list:
@@ -117,8 +119,8 @@ var-decl-list:
 ;
 
 var-decl:
-  INT ID SEMI																						{ new_symbol(VARIABLE, $2, yylineno, escopo, -1); $$ = new_leaf(SVAR_NODE, get_symbol_index(vt, get_name(vt, $2->data), escopo));  }
-| INT ID LBRACK NUM RBRACK SEMI													{ new_symbol(VARIABLE, $2, yylineno, escopo, -1); BT* var_dec_node = new_leaf(CVAR_NODE, get_symbol_index(vt, get_name(vt, $2->data), escopo)); $$ = add_child(var_dec_node, new_leaf(NUM_NODE, $4->data)); }
+  INT ID SEMI																						{ new_symbol(VARIABLE, $2, yylineno, escopo, -1); $$ = new_leaf(SVAR_NODE, get_symbol_index(vt, $2->text, escopo));  }
+| INT ID LBRACK NUM RBRACK SEMI													{ new_symbol(VARIABLE, $2, yylineno, escopo, -1); BT* var_dec_node = new_leaf(CVAR_NODE, get_symbol_index(vt, $2->text, escopo)); $$ = add_child(var_dec_node, create_lit_node(NUM_NODE, $4->data, $4->text)); }
 ;
 
 block:
@@ -147,9 +149,9 @@ assign-stmt:
 ;
 
 lval:
-  ID																										{ verify_symbol(VARIABLE, $1, yylineno, escopo, -1); $$ = new_leaf(SVAR_NODE, get_symbol_index(vt, get_name(vt, $1->data), escopo)); }
+  ID																										{ verify_symbol(VARIABLE, $1, yylineno, escopo, -1); $$ = new_leaf(SVAR_NODE, get_symbol_index(vt, $1->text, escopo)); }
 | ID LBRACK NUM RBRACK																	{ verify_symbol(VARIABLE, $1, yylineno, escopo, -1); }
-| ID LBRACK ID RBRACK																		{ verify_symbol(VARIABLE, $1, yylineno, escopo, -1);  verify_symbol(VARIABLE, $3, yylineno, escopo, -1); BT* lval_node = new_leaf(CVAR_NODE, get_symbol_index(vt, get_name(vt, $1->data), escopo)); add_child(lval_node, $$ = new_leaf(SVAR_NODE, get_symbol_index(vt, get_name(vt, $3->data), escopo))); $$ = lval_node; }
+| ID LBRACK ID RBRACK																		{ verify_symbol(VARIABLE, $1, yylineno, escopo, -1);  verify_symbol(VARIABLE, $3, yylineno, escopo, -1); BT* lval_node = new_leaf(CVAR_NODE, get_symbol_index(vt, $1->text, escopo)); add_child(lval_node, $$ = new_leaf(SVAR_NODE, get_symbol_index(vt, $3->text, escopo))); $$ = lval_node; }
 ;
 
 if-stmt:
@@ -181,11 +183,11 @@ output-call:
 ;
 
 write-call:
-  WRITE LPAREN STRING RPAREN														{ $$ = new_node(WRITE_NODE, 1, new_leaf(STRING_NODE, get_literal_index(lt, get_literal(lt, $3->data)))); }
+  WRITE LPAREN STRING RPAREN														{ $$ = new_node(WRITE_NODE, 1, create_lit_node(STRING_NODE, get_literal_index(lt, $3->text), $3->text)); }
 ;
 
 user-func-call:
-  ID LPAREN opt-arg-list RPAREN													{ verify_symbol(FUNCTION, $1, yylineno, -1, aridadeChamada); aridadeChamada = 0; BT* func_call = new_leaf(FCALL_NODE, get_symbol_index(ft, get_name(ft, $1->data), escopo)); $$ = add_child(func_call, $3); }
+  ID LPAREN opt-arg-list RPAREN													{ verify_symbol(FUNCTION, $1, yylineno, -1, aridade_chamada); aridade_chamada = 0; BT* func_call = new_leaf(FCALL_NODE, get_symbol_index(ft, $1->text, -1)); $$ = add_child(func_call, $3); }
 ;
 
 opt-arg-list:
@@ -194,8 +196,8 @@ opt-arg-list:
 ;
 
 arg-list:
-  arith-expr																						{ aridadeChamada++; $$ = new_node(ARG_LIST_NODE, 1, $1); }
-| arg-list COMMA arith-expr                             { aridadeChamada++; $$ = add_child($$, $3); }
+  arith-expr																						{ aridade_chamada++; $$ = new_node(ARG_LIST_NODE, 1, $1); }
+| arg-list COMMA arith-expr                             { aridade_chamada++; $$ = add_child($$, $3); }
 ;
 
 //Regra foi unificada para eliminar shift-reduce
@@ -210,7 +212,7 @@ bool-expr:
 
 //Regra foi unificada para eliminar shift-reduce
  arith-expr: 
-  NUM                                                   { $$ = new_leaf(NUM_NODE, $1->data); }
+  NUM                                                   { $$ = create_lit_node(NUM_NODE, -1, $1->text); }
 | input-call																						{ $$ = $1; }
 | lval																									{ $$ = $1; }
 | user-func-call																				{ $$ = $1; }
@@ -227,15 +229,16 @@ int main() {
     yydebug = 0; // Toggle this variable to enter debug mode.
 
     vt = create_sym_table();
+    //vt_aux = create_sym_table();
     ft = create_sym_table();
     lt = create_lit_table();
 
 
     if (yyparse() == 0) {
-        printf("PARSE SUCCESSFUL!\n");
+        // printf("PARSE SUCCESSFUL!\n");
         //printf("AST of given expression:\n");
         //print_tree(tree);
-        //print_dot(tree);
+        print_dot(tree);
         free_tree(tree);
     }
 
@@ -246,8 +249,9 @@ int main() {
     return 0;
 }
 
-//precisa recriar as funcoes aqui chamadas, ex getSymbol name vai usar das funcoes lookup_var e get_name da biblioteca que o prof deu
-void verify_symbol(int type, BT* node, int line, int escopo, int aridadeChamada) {
+//verifica se simbolo ou funcao ja foram criadas quando sao chamados no codigo
+//no caso de funcoes, tambem confere o numero de parametros
+void verify_symbol(int type, BT* node, int line, int escopo, int aridade_chamada) {
   if(type == VARIABLE){
 		if(!lookup_var(vt, node->text)){
 			printf("SEMANTIC ERROR (%d): variable '%s' was not declared.\n", line, node->text);
@@ -261,34 +265,35 @@ void verify_symbol(int type, BT* node, int line, int escopo, int aridadeChamada)
 			exit(1);
 		}
 
-		int aridadeDeclarada = get_symbol_arity(ft, node->text);
+		int aridade_declarada = get_symbol_arity(ft, node->text);
 
-		if(aridadeChamada != aridadeDeclarada){
-			printf("SEMANTIC ERROR (%d): function '%s' was called with %d arguments but declared with %d parameters.\n", line, node->text, aridadeChamada, aridadeDeclarada);
+		if(aridade_chamada != aridade_declarada){
+			printf("SEMANTIC ERROR (%d): function '%s' was called with %d arguments but declared with %d parameters.\n", line, node->text, aridade_chamada, aridade_declarada);
 			exit(1);
 		}
 	}
 }
 
-void new_symbol(int type, BT* node, int line, int escopo, int aridadeDeclarada) {
+//verifica se simbolo ou funcao ja foram criados antes de propriamente cria-los
+void new_symbol(int type, BT* node, int line, int escopo, int aridade_declarada) {
   if(type == VARIABLE){
 		if (lookup_var(vt, node->text) && escopo == get_symbol_escope(vt, node->text)) {
         printf("SEMANTIC ERROR (%d): variable '%s' already declared at line %d.\n",
-            line, node->text, get_symbol_index(vt, node->text, escopo));
+            line, node->text, get_line(vt, node->text));
         exit(1);
     }
 
-    add_var(vt, node->text, line, escopo, aridadeDeclarada);
+    add_var(vt, node->text, line, escopo, aridade_declarada);
   }
 
   if(type == FUNCTION){
       if (lookup_var(ft, node->text)) {
         printf("SEMANTIC ERROR (%d): function '%s' already declared at line %d.\n",
-            line, node->text, get_symbol_index(ft, node->text, escopo));
+            line, node->text, get_line(ft, node->text));
         exit(1);
     }
 
-    add_var(ft, node->text, line, escopo, aridadeDeclarada);
+    add_var(ft, node->text, line, escopo, aridade_declarada);
 
   }
 }
@@ -298,5 +303,3 @@ void yyerror (char const *s) {
 	printf("PARSE ERROR (%d): %s\n", yylineno, s);
 	exit(0);
 }
-
-//tem que rever os vt e ft, tinha colocado tudo um só

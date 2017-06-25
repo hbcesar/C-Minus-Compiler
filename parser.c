@@ -77,22 +77,24 @@
 int yylex(void);
 void yyerror(char const *s);
 
-void verify_symbol(int, BT*, int, int, int);
-void new_symbol(int, BT*, int, int, int);
+void verify_symbol(int, BT*, int, int, int); //verifica simbolo
+void new_symbol(int, BT*, int, int, int); //cria novo simbolo (na tabela de variaveis ou funcao, depende do primeiro parametro)
 
 extern int yylineno;
+extern char* yytext;
 
-BT *tree;
-SymbolsTable *ft;
-SymbolsTable *vt;
-LiteralsTable *lt;
+BT *tree; //arvore
+SymbolsTable *ft; //tabela de funcoes
+SymbolsTable *vt; //tabela de variaveis
+//SymbolsTable *vt_aux; //tabela de variaveis auxiliar
+LiteralsTable *lt; //tabela de literais
 
-int aridadeDeclarada = 0;
-int aridadeChamada = 0;
-int escopo = 0;
+int aridade_declarada = 0; //aridade declarada
+int aridade_chamada = 0; //aridade de chamada de funcao
+int escopo = 0; //escopo de variavel
 
 
-#line 96 "parser.c" /* yacc.c:339  */
+#line 98 "parser.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -177,7 +179,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 181 "parser.c" /* yacc.c:358  */
+#line 183 "parser.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -454,13 +456,13 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    69,    69,    73,    74,    78,    82,    86,    90,    91,
-      95,    96,   100,   101,   105,   106,   110,   111,   115,   116,
-     120,   121,   125,   129,   133,   134,   138,   139,   140,   141,
-     142,   146,   150,   151,   152,   156,   157,   161,   165,   166,
-     170,   171,   172,   176,   180,   184,   188,   192,   193,   197,
-     198,   203,   204,   205,   206,   207,   208,   213,   214,   215,
-     216,   217,   218,   219,   220,   221
+       0,    71,    71,    75,    76,    80,    84,    88,    92,    93,
+      97,    98,   102,   103,   107,   108,   112,   113,   117,   118,
+     122,   123,   127,   131,   135,   136,   140,   141,   142,   143,
+     144,   148,   152,   153,   154,   158,   159,   163,   167,   168,
+     172,   173,   174,   178,   182,   186,   190,   194,   195,   199,
+     200,   205,   206,   207,   208,   209,   210,   215,   216,   217,
+     218,   219,   220,   221,   222,   223
 };
 #endif
 
@@ -1571,391 +1573,391 @@ yyreduce:
     switch (yyn)
       {
           case 2:
-#line 69 "parser.y" /* yacc.c:1661  */
+#line 71 "parser.y" /* yacc.c:1661  */
     { tree = (yyvsp[0]); }
-#line 1577 "parser.c" /* yacc.c:1661  */
+#line 1579 "parser.c" /* yacc.c:1661  */
     break;
 
   case 3:
-#line 73 "parser.y" /* yacc.c:1661  */
+#line 75 "parser.y" /* yacc.c:1661  */
     { (yyval) = new_node(FUNC_DECL_LIST_NODE, 1, (yyvsp[0])); }
-#line 1583 "parser.c" /* yacc.c:1661  */
+#line 1585 "parser.c" /* yacc.c:1661  */
     break;
 
   case 4:
-#line 74 "parser.y" /* yacc.c:1661  */
+#line 76 "parser.y" /* yacc.c:1661  */
     { (yyval) = add_child((yyval), (yyvsp[0])); }
-#line 1589 "parser.c" /* yacc.c:1661  */
+#line 1591 "parser.c" /* yacc.c:1661  */
     break;
 
   case 5:
-#line 78 "parser.y" /* yacc.c:1661  */
+#line 80 "parser.y" /* yacc.c:1661  */
     { escopo++; (yyval) = new_node(FUNC_DECL_NODE, 2, (yyvsp[-1]), (yyvsp[0])); }
-#line 1595 "parser.c" /* yacc.c:1661  */
+#line 1597 "parser.c" /* yacc.c:1661  */
     break;
 
   case 6:
-#line 82 "parser.y" /* yacc.c:1661  */
-    { new_symbol(FUNCTION, (yyvsp[-3]), yylineno, -1, aridadeDeclarada); aridadeDeclarada = 0;  (yyval) = new_node(FUNC_HEADER_NODE, 3, (yyvsp[-4]), new_leaf(ID_NODE, get_symbol_index(ft, get_name(ft, (yyvsp[-3])->data), -1)), (yyvsp[-1])); }
-#line 1601 "parser.c" /* yacc.c:1661  */
+#line 84 "parser.y" /* yacc.c:1661  */
+    { new_symbol(FUNCTION, (yyvsp[-3]), yylineno, -1, aridade_declarada); aridade_declarada = 0;  (yyval) = new_node(FUNC_HEADER_NODE, 3, (yyvsp[-4]), create_lit_node(ID_NODE, get_symbol_index(ft, (yyvsp[-3])->text, -1), (yyvsp[-3])->text), (yyvsp[-1])); }
+#line 1603 "parser.c" /* yacc.c:1661  */
     break;
 
   case 7:
-#line 86 "parser.y" /* yacc.c:1661  */
+#line 88 "parser.y" /* yacc.c:1661  */
     { (yyval) = new_node(FUNC_BODY_NODE, 2, (yyvsp[-2]), (yyvsp[-1])); }
-#line 1607 "parser.c" /* yacc.c:1661  */
+#line 1609 "parser.c" /* yacc.c:1661  */
     break;
 
   case 8:
-#line 90 "parser.y" /* yacc.c:1661  */
+#line 92 "parser.y" /* yacc.c:1661  */
     { (yyval) = new_node(VAR_LIST_NODE, 0); }
-#line 1613 "parser.c" /* yacc.c:1661  */
+#line 1615 "parser.c" /* yacc.c:1661  */
     break;
 
   case 9:
-#line 91 "parser.y" /* yacc.c:1661  */
+#line 93 "parser.y" /* yacc.c:1661  */
     { (yyval) = (yyvsp[0]); }
-#line 1619 "parser.c" /* yacc.c:1661  */
+#line 1621 "parser.c" /* yacc.c:1661  */
     break;
 
   case 10:
-#line 95 "parser.y" /* yacc.c:1661  */
+#line 97 "parser.y" /* yacc.c:1661  */
     { (yyval) = create_node(INT_NODE); }
-#line 1625 "parser.c" /* yacc.c:1661  */
+#line 1627 "parser.c" /* yacc.c:1661  */
     break;
 
   case 11:
-#line 96 "parser.y" /* yacc.c:1661  */
+#line 98 "parser.y" /* yacc.c:1661  */
     { (yyval) = create_node(VOID_NODE); }
-#line 1631 "parser.c" /* yacc.c:1661  */
+#line 1633 "parser.c" /* yacc.c:1661  */
     break;
 
   case 12:
-#line 100 "parser.y" /* yacc.c:1661  */
-    { (yyval) = create_node(VOID_NODE); }
-#line 1637 "parser.c" /* yacc.c:1661  */
+#line 102 "parser.y" /* yacc.c:1661  */
+    { (yyval) = create_node(PARAM_NODE); }
+#line 1639 "parser.c" /* yacc.c:1661  */
     break;
 
   case 13:
-#line 101 "parser.y" /* yacc.c:1661  */
+#line 103 "parser.y" /* yacc.c:1661  */
     { (yyval) = (yyvsp[0]); }
-#line 1643 "parser.c" /* yacc.c:1661  */
+#line 1645 "parser.c" /* yacc.c:1661  */
     break;
 
   case 14:
-#line 105 "parser.y" /* yacc.c:1661  */
+#line 107 "parser.y" /* yacc.c:1661  */
     { (yyval) = new_node(PARAM_NODE, 1, (yyvsp[0])); }
-#line 1649 "parser.c" /* yacc.c:1661  */
+#line 1651 "parser.c" /* yacc.c:1661  */
     break;
 
   case 15:
-#line 106 "parser.y" /* yacc.c:1661  */
+#line 108 "parser.y" /* yacc.c:1661  */
     { (yyval) = add_child((yyval), (yyvsp[0])); }
-#line 1655 "parser.c" /* yacc.c:1661  */
+#line 1657 "parser.c" /* yacc.c:1661  */
     break;
 
   case 16:
-#line 110 "parser.y" /* yacc.c:1661  */
-    { aridadeDeclarada++; new_symbol(VARIABLE, (yyvsp[0]), yylineno, escopo, -1); (yyval) = new_leaf(SVAR_NODE, get_symbol_index(vt, get_name(vt, (yyvsp[0])->data), escopo)); }
-#line 1661 "parser.c" /* yacc.c:1661  */
+#line 112 "parser.y" /* yacc.c:1661  */
+    { aridade_declarada++; new_symbol(VARIABLE, (yyvsp[0]), yylineno, escopo, -1); (yyval) = new_leaf(SVAR_NODE, get_symbol_index(vt, (yyvsp[0])->text, escopo)); }
+#line 1663 "parser.c" /* yacc.c:1661  */
     break;
 
   case 17:
-#line 111 "parser.y" /* yacc.c:1661  */
-    { aridadeDeclarada++; new_symbol(VARIABLE, (yyvsp[-2]), yylineno, escopo, -1); (yyval) = new_leaf(CVAR_NODE, get_symbol_index(vt, get_name(vt, (yyvsp[-2])->data), escopo)); }
-#line 1667 "parser.c" /* yacc.c:1661  */
+#line 113 "parser.y" /* yacc.c:1661  */
+    { aridade_declarada++; new_symbol(VARIABLE, (yyvsp[-2]), yylineno, escopo, -1); (yyval) = new_leaf(CVAR_NODE, get_symbol_index(vt, (yyvsp[-2])->text, escopo)); }
+#line 1669 "parser.c" /* yacc.c:1661  */
     break;
 
   case 18:
-#line 115 "parser.y" /* yacc.c:1661  */
+#line 117 "parser.y" /* yacc.c:1661  */
     { (yyval) = new_node(VAR_LIST_NODE, 1, (yyvsp[0])); }
-#line 1673 "parser.c" /* yacc.c:1661  */
+#line 1675 "parser.c" /* yacc.c:1661  */
     break;
 
   case 19:
-#line 116 "parser.y" /* yacc.c:1661  */
+#line 118 "parser.y" /* yacc.c:1661  */
     { (yyval) = add_child((yyval), (yyvsp[0])); }
-#line 1679 "parser.c" /* yacc.c:1661  */
+#line 1681 "parser.c" /* yacc.c:1661  */
     break;
 
   case 20:
-#line 120 "parser.y" /* yacc.c:1661  */
-    { new_symbol(VARIABLE, (yyvsp[-1]), yylineno, escopo, -1); (yyval) = new_leaf(SVAR_NODE, get_symbol_index(vt, get_name(vt, (yyvsp[-1])->data), escopo));  }
-#line 1685 "parser.c" /* yacc.c:1661  */
+#line 122 "parser.y" /* yacc.c:1661  */
+    { new_symbol(VARIABLE, (yyvsp[-1]), yylineno, escopo, -1); (yyval) = new_leaf(SVAR_NODE, get_symbol_index(vt, (yyvsp[-1])->text, escopo));  }
+#line 1687 "parser.c" /* yacc.c:1661  */
     break;
 
   case 21:
-#line 121 "parser.y" /* yacc.c:1661  */
-    { new_symbol(VARIABLE, (yyvsp[-4]), yylineno, escopo, -1); BT* var_dec_node = new_leaf(CVAR_NODE, get_symbol_index(vt, get_name(vt, (yyvsp[-4])->data), escopo)); (yyval) = add_child(var_dec_node, new_leaf(NUM_NODE, (yyvsp[-2])->data)); }
-#line 1691 "parser.c" /* yacc.c:1661  */
+#line 123 "parser.y" /* yacc.c:1661  */
+    { new_symbol(VARIABLE, (yyvsp[-4]), yylineno, escopo, -1); BT* var_dec_node = new_leaf(CVAR_NODE, get_symbol_index(vt, (yyvsp[-4])->text, escopo)); (yyval) = add_child(var_dec_node, create_lit_node(NUM_NODE, (yyvsp[-2])->data, (yyvsp[-2])->text)); }
+#line 1693 "parser.c" /* yacc.c:1661  */
     break;
 
   case 22:
-#line 125 "parser.y" /* yacc.c:1661  */
+#line 127 "parser.y" /* yacc.c:1661  */
     { (yyval) = (yyvsp[-1]); }
-#line 1697 "parser.c" /* yacc.c:1661  */
+#line 1699 "parser.c" /* yacc.c:1661  */
     break;
 
   case 23:
-#line 129 "parser.y" /* yacc.c:1661  */
+#line 131 "parser.y" /* yacc.c:1661  */
     { }
-#line 1703 "parser.c" /* yacc.c:1661  */
+#line 1705 "parser.c" /* yacc.c:1661  */
     break;
 
   case 24:
-#line 133 "parser.y" /* yacc.c:1661  */
+#line 135 "parser.y" /* yacc.c:1661  */
     { (yyval) = new_node(STMT_LIST_NODE, 0); }
-#line 1709 "parser.c" /* yacc.c:1661  */
+#line 1711 "parser.c" /* yacc.c:1661  */
     break;
 
   case 25:
-#line 134 "parser.y" /* yacc.c:1661  */
+#line 136 "parser.y" /* yacc.c:1661  */
     { (yyval) = add_child((yyval), (yyvsp[0])); }
-#line 1715 "parser.c" /* yacc.c:1661  */
+#line 1717 "parser.c" /* yacc.c:1661  */
     break;
 
   case 26:
-#line 138 "parser.y" /* yacc.c:1661  */
+#line 140 "parser.y" /* yacc.c:1661  */
     { (yyval) = (yyvsp[0]); }
-#line 1721 "parser.c" /* yacc.c:1661  */
+#line 1723 "parser.c" /* yacc.c:1661  */
     break;
 
   case 27:
-#line 139 "parser.y" /* yacc.c:1661  */
+#line 141 "parser.y" /* yacc.c:1661  */
     { (yyval) = (yyvsp[0]); }
-#line 1727 "parser.c" /* yacc.c:1661  */
+#line 1729 "parser.c" /* yacc.c:1661  */
     break;
 
   case 28:
-#line 140 "parser.y" /* yacc.c:1661  */
+#line 142 "parser.y" /* yacc.c:1661  */
     { (yyval) = (yyvsp[0]); }
-#line 1733 "parser.c" /* yacc.c:1661  */
+#line 1735 "parser.c" /* yacc.c:1661  */
     break;
 
   case 29:
-#line 141 "parser.y" /* yacc.c:1661  */
+#line 143 "parser.y" /* yacc.c:1661  */
     { (yyval) = (yyvsp[0]); }
-#line 1739 "parser.c" /* yacc.c:1661  */
+#line 1741 "parser.c" /* yacc.c:1661  */
     break;
 
   case 30:
-#line 142 "parser.y" /* yacc.c:1661  */
+#line 144 "parser.y" /* yacc.c:1661  */
     { (yyval) = (yyvsp[-1]); }
-#line 1745 "parser.c" /* yacc.c:1661  */
+#line 1747 "parser.c" /* yacc.c:1661  */
     break;
 
   case 31:
-#line 146 "parser.y" /* yacc.c:1661  */
+#line 148 "parser.y" /* yacc.c:1661  */
     { (yyval) = new_node(ASSIGN_NODE, 2, (yyvsp[-3]), (yyvsp[-1])); }
-#line 1751 "parser.c" /* yacc.c:1661  */
+#line 1753 "parser.c" /* yacc.c:1661  */
     break;
 
   case 32:
-#line 150 "parser.y" /* yacc.c:1661  */
-    { verify_symbol(VARIABLE, (yyvsp[0]), yylineno, escopo, -1); (yyval) = new_leaf(SVAR_NODE, get_symbol_index(vt, get_name(vt, (yyvsp[0])->data), escopo)); }
-#line 1757 "parser.c" /* yacc.c:1661  */
+#line 152 "parser.y" /* yacc.c:1661  */
+    { verify_symbol(VARIABLE, (yyvsp[0]), yylineno, escopo, -1); (yyval) = new_leaf(SVAR_NODE, get_symbol_index(vt, (yyvsp[0])->text, escopo)); }
+#line 1759 "parser.c" /* yacc.c:1661  */
     break;
 
   case 33:
-#line 151 "parser.y" /* yacc.c:1661  */
+#line 153 "parser.y" /* yacc.c:1661  */
     { verify_symbol(VARIABLE, (yyvsp[-3]), yylineno, escopo, -1); }
-#line 1763 "parser.c" /* yacc.c:1661  */
+#line 1765 "parser.c" /* yacc.c:1661  */
     break;
 
   case 34:
-#line 152 "parser.y" /* yacc.c:1661  */
-    { verify_symbol(VARIABLE, (yyvsp[-3]), yylineno, escopo, -1);  verify_symbol(VARIABLE, (yyvsp[-1]), yylineno, escopo, -1); BT* lval_node = new_leaf(CVAR_NODE, get_symbol_index(vt, get_name(vt, (yyvsp[-3])->data), escopo)); add_child(lval_node, (yyval) = new_leaf(SVAR_NODE, get_symbol_index(vt, get_name(vt, (yyvsp[-1])->data), escopo))); (yyval) = lval_node; }
-#line 1769 "parser.c" /* yacc.c:1661  */
+#line 154 "parser.y" /* yacc.c:1661  */
+    { verify_symbol(VARIABLE, (yyvsp[-3]), yylineno, escopo, -1);  verify_symbol(VARIABLE, (yyvsp[-1]), yylineno, escopo, -1); BT* lval_node = new_leaf(CVAR_NODE, get_symbol_index(vt, (yyvsp[-3])->text, escopo)); add_child(lval_node, (yyval) = new_leaf(SVAR_NODE, get_symbol_index(vt, (yyvsp[-1])->text, escopo))); (yyval) = lval_node; }
+#line 1771 "parser.c" /* yacc.c:1661  */
     break;
 
   case 35:
-#line 156 "parser.y" /* yacc.c:1661  */
+#line 158 "parser.y" /* yacc.c:1661  */
     { (yyval) = new_node(IF_NODE, 2, (yyvsp[-2]), (yyvsp[0])); }
-#line 1775 "parser.c" /* yacc.c:1661  */
+#line 1777 "parser.c" /* yacc.c:1661  */
     break;
 
   case 36:
-#line 157 "parser.y" /* yacc.c:1661  */
+#line 159 "parser.y" /* yacc.c:1661  */
     { (yyval) = new_node(IF_NODE, 3, (yyvsp[-4]), (yyvsp[-2]), (yyvsp[0])); }
-#line 1781 "parser.c" /* yacc.c:1661  */
+#line 1783 "parser.c" /* yacc.c:1661  */
     break;
 
   case 37:
-#line 161 "parser.y" /* yacc.c:1661  */
+#line 163 "parser.y" /* yacc.c:1661  */
     { (yyval) = new_node(WHILE_NODE, 2, (yyvsp[-2]), (yyvsp[0])); }
-#line 1787 "parser.c" /* yacc.c:1661  */
+#line 1789 "parser.c" /* yacc.c:1661  */
     break;
 
   case 38:
-#line 165 "parser.y" /* yacc.c:1661  */
+#line 167 "parser.y" /* yacc.c:1661  */
     { (yyval) = new_node(RETURN_NODE, 0); }
-#line 1793 "parser.c" /* yacc.c:1661  */
+#line 1795 "parser.c" /* yacc.c:1661  */
     break;
 
   case 39:
-#line 166 "parser.y" /* yacc.c:1661  */
+#line 168 "parser.y" /* yacc.c:1661  */
     { (yyval) = new_node(RETURN_NODE, 1, (yyvsp[-1])); }
-#line 1799 "parser.c" /* yacc.c:1661  */
+#line 1801 "parser.c" /* yacc.c:1661  */
     break;
 
   case 40:
-#line 170 "parser.y" /* yacc.c:1661  */
+#line 172 "parser.y" /* yacc.c:1661  */
     { (yyval) = (yyvsp[0]); }
-#line 1805 "parser.c" /* yacc.c:1661  */
+#line 1807 "parser.c" /* yacc.c:1661  */
     break;
 
   case 41:
-#line 171 "parser.y" /* yacc.c:1661  */
+#line 173 "parser.y" /* yacc.c:1661  */
     { (yyval) = (yyvsp[0]); }
-#line 1811 "parser.c" /* yacc.c:1661  */
+#line 1813 "parser.c" /* yacc.c:1661  */
     break;
 
   case 42:
-#line 172 "parser.y" /* yacc.c:1661  */
+#line 174 "parser.y" /* yacc.c:1661  */
     { (yyval) = (yyvsp[0]); }
-#line 1817 "parser.c" /* yacc.c:1661  */
+#line 1819 "parser.c" /* yacc.c:1661  */
     break;
 
   case 43:
-#line 176 "parser.y" /* yacc.c:1661  */
+#line 178 "parser.y" /* yacc.c:1661  */
     { (yyval) = (yyvsp[-2]); }
-#line 1823 "parser.c" /* yacc.c:1661  */
+#line 1825 "parser.c" /* yacc.c:1661  */
     break;
 
   case 44:
-#line 180 "parser.y" /* yacc.c:1661  */
+#line 182 "parser.y" /* yacc.c:1661  */
     { (yyval) = new_node(OUTPUT_NODE, 1, (yyvsp[-1])); }
-#line 1829 "parser.c" /* yacc.c:1661  */
+#line 1831 "parser.c" /* yacc.c:1661  */
     break;
 
   case 45:
-#line 184 "parser.y" /* yacc.c:1661  */
-    { (yyval) = new_node(WRITE_NODE, 1, new_leaf(STRING_NODE, get_literal_index(lt, get_literal(lt, (yyvsp[-1])->data)))); }
-#line 1835 "parser.c" /* yacc.c:1661  */
+#line 186 "parser.y" /* yacc.c:1661  */
+    { (yyval) = new_node(WRITE_NODE, 1, create_lit_node(STRING_NODE, get_literal_index(lt, (yyvsp[-1])->text), (yyvsp[-1])->text)); }
+#line 1837 "parser.c" /* yacc.c:1661  */
     break;
 
   case 46:
-#line 188 "parser.y" /* yacc.c:1661  */
-    { verify_symbol(FUNCTION, (yyvsp[-3]), yylineno, -1, aridadeChamada); aridadeChamada = 0; BT* func_call = new_leaf(FCALL_NODE, get_symbol_index(ft, get_name(ft, (yyvsp[-3])->data), escopo)); (yyval) = add_child(func_call, (yyvsp[-1])); }
-#line 1841 "parser.c" /* yacc.c:1661  */
+#line 190 "parser.y" /* yacc.c:1661  */
+    { verify_symbol(FUNCTION, (yyvsp[-3]), yylineno, -1, aridade_chamada); aridade_chamada = 0; BT* func_call = new_leaf(FCALL_NODE, get_symbol_index(ft, (yyvsp[-3])->text, -1)); (yyval) = add_child(func_call, (yyvsp[-1])); }
+#line 1843 "parser.c" /* yacc.c:1661  */
     break;
 
   case 47:
-#line 192 "parser.y" /* yacc.c:1661  */
+#line 194 "parser.y" /* yacc.c:1661  */
     { }
-#line 1847 "parser.c" /* yacc.c:1661  */
+#line 1849 "parser.c" /* yacc.c:1661  */
     break;
 
   case 48:
-#line 193 "parser.y" /* yacc.c:1661  */
+#line 195 "parser.y" /* yacc.c:1661  */
     { (yyval) = (yyvsp[0]); }
-#line 1853 "parser.c" /* yacc.c:1661  */
+#line 1855 "parser.c" /* yacc.c:1661  */
     break;
 
   case 49:
-#line 197 "parser.y" /* yacc.c:1661  */
-    { aridadeChamada++; (yyval) = new_node(ARG_LIST_NODE, 1, (yyvsp[0])); }
-#line 1859 "parser.c" /* yacc.c:1661  */
+#line 199 "parser.y" /* yacc.c:1661  */
+    { aridade_chamada++; (yyval) = new_node(ARG_LIST_NODE, 1, (yyvsp[0])); }
+#line 1861 "parser.c" /* yacc.c:1661  */
     break;
 
   case 50:
-#line 198 "parser.y" /* yacc.c:1661  */
-    { aridadeChamada++; (yyval) = add_child((yyval), (yyvsp[0])); }
-#line 1865 "parser.c" /* yacc.c:1661  */
+#line 200 "parser.y" /* yacc.c:1661  */
+    { aridade_chamada++; (yyval) = add_child((yyval), (yyvsp[0])); }
+#line 1867 "parser.c" /* yacc.c:1661  */
     break;
 
   case 51:
-#line 203 "parser.y" /* yacc.c:1661  */
+#line 205 "parser.y" /* yacc.c:1661  */
     { (yyval) = new_node(LT_NODE, 2, (yyvsp[-2]), (yyvsp[0])); }
-#line 1871 "parser.c" /* yacc.c:1661  */
+#line 1873 "parser.c" /* yacc.c:1661  */
     break;
 
   case 52:
-#line 204 "parser.y" /* yacc.c:1661  */
+#line 206 "parser.y" /* yacc.c:1661  */
     { (yyval) = new_node(LEQ_NODE, 2, (yyvsp[-2]), (yyvsp[0])); }
-#line 1877 "parser.c" /* yacc.c:1661  */
+#line 1879 "parser.c" /* yacc.c:1661  */
     break;
 
   case 53:
-#line 205 "parser.y" /* yacc.c:1661  */
+#line 207 "parser.y" /* yacc.c:1661  */
     { (yyval) = new_node(GT_NODE, 2, (yyvsp[-2]), (yyvsp[0])); }
-#line 1883 "parser.c" /* yacc.c:1661  */
+#line 1885 "parser.c" /* yacc.c:1661  */
     break;
 
   case 54:
-#line 206 "parser.y" /* yacc.c:1661  */
+#line 208 "parser.y" /* yacc.c:1661  */
     { (yyval) = new_node(GEQ_NODE, 2, (yyvsp[-2]), (yyvsp[0])); }
-#line 1889 "parser.c" /* yacc.c:1661  */
+#line 1891 "parser.c" /* yacc.c:1661  */
     break;
 
   case 55:
-#line 207 "parser.y" /* yacc.c:1661  */
+#line 209 "parser.y" /* yacc.c:1661  */
     { (yyval) = new_node(EQ_NODE, 2, (yyvsp[-2]), (yyvsp[0])); }
-#line 1895 "parser.c" /* yacc.c:1661  */
+#line 1897 "parser.c" /* yacc.c:1661  */
     break;
 
   case 56:
-#line 208 "parser.y" /* yacc.c:1661  */
+#line 210 "parser.y" /* yacc.c:1661  */
     { (yyval) = new_node(NEQ_NODE, 2, (yyvsp[-2]), (yyvsp[0])); }
-#line 1901 "parser.c" /* yacc.c:1661  */
+#line 1903 "parser.c" /* yacc.c:1661  */
     break;
 
   case 57:
-#line 213 "parser.y" /* yacc.c:1661  */
-    { (yyval) = new_leaf(NUM_NODE, (yyvsp[0])->data); }
-#line 1907 "parser.c" /* yacc.c:1661  */
+#line 215 "parser.y" /* yacc.c:1661  */
+    { (yyval) = create_lit_node(NUM_NODE, -1, (yyvsp[0])->text); }
+#line 1909 "parser.c" /* yacc.c:1661  */
     break;
 
   case 58:
-#line 214 "parser.y" /* yacc.c:1661  */
+#line 216 "parser.y" /* yacc.c:1661  */
     { (yyval) = (yyvsp[0]); }
-#line 1913 "parser.c" /* yacc.c:1661  */
+#line 1915 "parser.c" /* yacc.c:1661  */
     break;
 
   case 59:
-#line 215 "parser.y" /* yacc.c:1661  */
+#line 217 "parser.y" /* yacc.c:1661  */
     { (yyval) = (yyvsp[0]); }
-#line 1919 "parser.c" /* yacc.c:1661  */
+#line 1921 "parser.c" /* yacc.c:1661  */
     break;
 
   case 60:
-#line 216 "parser.y" /* yacc.c:1661  */
+#line 218 "parser.y" /* yacc.c:1661  */
     { (yyval) = (yyvsp[0]); }
-#line 1925 "parser.c" /* yacc.c:1661  */
+#line 1927 "parser.c" /* yacc.c:1661  */
     break;
 
   case 61:
-#line 217 "parser.y" /* yacc.c:1661  */
+#line 219 "parser.y" /* yacc.c:1661  */
     { (yyval) = (yyvsp[-1]); }
-#line 1931 "parser.c" /* yacc.c:1661  */
+#line 1933 "parser.c" /* yacc.c:1661  */
     break;
 
   case 62:
-#line 218 "parser.y" /* yacc.c:1661  */
+#line 220 "parser.y" /* yacc.c:1661  */
     { (yyval) = new_node(PLUS_NODE, 2, (yyvsp[-2]), (yyvsp[0])); }
-#line 1937 "parser.c" /* yacc.c:1661  */
+#line 1939 "parser.c" /* yacc.c:1661  */
     break;
 
   case 63:
-#line 219 "parser.y" /* yacc.c:1661  */
+#line 221 "parser.y" /* yacc.c:1661  */
     { (yyval) = new_node(MINUS_NODE, 2, (yyvsp[-2]), (yyvsp[0])); }
-#line 1943 "parser.c" /* yacc.c:1661  */
+#line 1945 "parser.c" /* yacc.c:1661  */
     break;
 
   case 64:
-#line 220 "parser.y" /* yacc.c:1661  */
+#line 222 "parser.y" /* yacc.c:1661  */
     { (yyval) = new_node(TIMES_NODE, 2, (yyvsp[-2]), (yyvsp[0])); }
-#line 1949 "parser.c" /* yacc.c:1661  */
+#line 1951 "parser.c" /* yacc.c:1661  */
     break;
 
   case 65:
-#line 221 "parser.y" /* yacc.c:1661  */
+#line 223 "parser.y" /* yacc.c:1661  */
     { (yyval) = new_node(OVER_NODE, 2, (yyvsp[-2]), (yyvsp[0])); }
-#line 1955 "parser.c" /* yacc.c:1661  */
+#line 1957 "parser.c" /* yacc.c:1661  */
     break;
 
 
-#line 1959 "parser.c" /* yacc.c:1661  */
+#line 1961 "parser.c" /* yacc.c:1661  */
         default: break;
       }
     if (yychar_backup != yychar)
@@ -2195,22 +2197,23 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 224 "parser.y" /* yacc.c:1906  */
+#line 226 "parser.y" /* yacc.c:1906  */
 
 
 int main() {
     yydebug = 0; // Toggle this variable to enter debug mode.
 
     vt = create_sym_table();
+    //vt_aux = create_sym_table();
     ft = create_sym_table();
     lt = create_lit_table();
 
 
     if (yyparse() == 0) {
-        printf("PARSE SUCCESSFUL!\n");
+        // printf("PARSE SUCCESSFUL!\n");
         //printf("AST of given expression:\n");
         //print_tree(tree);
-        //print_dot(tree);
+        print_dot(tree);
         free_tree(tree);
     }
 
@@ -2221,49 +2224,51 @@ int main() {
     return 0;
 }
 
-//precisa recriar as funcoes aqui chamadas, ex getSymbol name vai usar das funcoes lookup_var e get_name da biblioteca que o prof deu
-void verify_symbol(int type, BT* node, int line, int escopo, int aridadeChamada) {
+//verifica se simbolo ou funcao ja foram criadas quando sao chamados no codigo
+//no caso de funcoes, tambem confere o numero de parametros
+void verify_symbol(int type, BT* node, int line, int escopo, int aridade_chamada) {
   if(type == VARIABLE){
 		if(!lookup_var(vt, node->text)){
-			printf("SEMANTIC ERROR (%d): variable '%s' was not declared.\n", line, node->text);
-			exit(1);
+			//printf("SEMANTIC ERROR (%d): variable '%s' was not declared.\n", line, node->text);
+			//exit(1);
 		}
   }
 
 	if(type == FUNCTION){
 		if(!lookup_var(ft, node->text)){
-			printf("SEMANTIC ERROR (%d): function '%s' was not declared.\n", line, node->text);
-			exit(1);
+			//printf("SEMANTIC ERROR (%d): function '%s' was not declared.\n", line, node->text);
+			//exit(1);
 		}
 
-		int aridadeDeclarada = get_symbol_arity(ft, node->text);
+		int aridade_declarada = get_symbol_arity(ft, node->text);
 
-		if(aridadeChamada != aridadeDeclarada){
-			printf("SEMANTIC ERROR (%d): function '%s' was called with %d arguments but declared with %d parameters.\n", line, node->text, aridadeChamada, aridadeDeclarada);
-			exit(1);
+		if(aridade_chamada != aridade_declarada){
+			//printf("SEMANTIC ERROR (%d): function '%s' was called with %d arguments but declared with %d parameters.\n", line, node->text, aridade_chamada, aridade_declarada);
+			//exit(1);
 		}
 	}
 }
 
-void new_symbol(int type, BT* node, int line, int escopo, int aridadeDeclarada) {
+//verifica se simbolo ou funcao ja foram criados antes de propriamente cria-los
+void new_symbol(int type, BT* node, int line, int escopo, int aridade_declarada) {
   if(type == VARIABLE){
 		if (lookup_var(vt, node->text) && escopo == get_symbol_escope(vt, node->text)) {
-        printf("SEMANTIC ERROR (%d): variable '%s' already declared at line %d.\n",
-            line, node->text, get_symbol_index(vt, node->text, escopo));
-        exit(1);
+        //printf("SEMANTIC ERROR (%d): variable '%s' already declared at line %d.\n",
+            //line, node->text, get_line(vt, node->text));
+        //exit(1);
     }
 
-    add_var(vt, node->text, line, escopo, aridadeDeclarada);
+    add_var(vt, node->text, line, escopo, aridade_declarada);
   }
 
   if(type == FUNCTION){
       if (lookup_var(ft, node->text)) {
-        printf("SEMANTIC ERROR (%d): function '%s' already declared at line %d.\n",
-            line, node->text, get_symbol_index(ft, node->text, escopo));
-        exit(1);
+        //printf("SEMANTIC ERROR (%d): function '%s' already declared at line %d.\n",
+            //line, node->text, get_line(ft, node->text));
+        //exit(1);
     }
 
-    add_var(ft, node->text, line, escopo, aridadeDeclarada);
+    add_var(ft, node->text, line, escopo, aridade_declarada);
 
   }
 }
@@ -2273,5 +2278,3 @@ void yyerror (char const *s) {
 	printf("PARSE ERROR (%d): %s\n", yylineno, s);
 	exit(0);
 }
-
-//tem que rever os vt e ft, tinha colocado tudo um só

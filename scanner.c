@@ -987,18 +987,18 @@ YY_RULE_SETUP
 case 35:
 YY_RULE_SETUP
 #line 57 "scanner.l"
-{ return NUM; } /* Bloco 4: tokens que admitem mais de um lexema */
+{ yylval = create_lit_node(NUM_NODE, -1, yytext); return NUM; } /* Bloco 4: tokens que admitem mais de um lexema */
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
 #line 58 "scanner.l"
-{ yylval = create_id_node(yytext); return ID; }
+{ yylval = create_lit_node(ID_NODE, -1, yytext); return ID; }
 	YY_BREAK
 case 37:
 /* rule 37 can match eol */
 YY_RULE_SETUP
 #line 59 "scanner.l"
-{ add_literal(lt, yytext); return STRING; }
+{ yylval = create_lit_node(STRING_NODE, add_literal(lt, yytext), yytext); return STRING; }
 	YY_BREAK
 case 38:
 /* rule 38 can match eol */
