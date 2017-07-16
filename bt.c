@@ -44,7 +44,7 @@ BT* new_node(NodeKind kind, int count, ...) {
 BT* add_child(BT* node, BT* child){
 	if(node->children_count < NUMCHILD) {
 		node->children[node->children_count] = child;
-        node->children_count = node->children_count + 1;
+        node->children_count += 1;
 	} else {
         printf("Excedeu o número de filhos de um nó, abortando!");
         exit(1);
@@ -75,12 +75,6 @@ void print_node(BT *node, int level) {
     }
 }
 
-// void print_bt(BT *tree, int level) {
-//     if (tree->l != NULL) print_bt(tree->l, level + 1);
-//     print_node(tree, level);
-//     if (tree->r != NULL) print_bt(tree->r, level + 1);
-// }
-
 void print_tree(BT *tree) {
     print_node(tree, 0);
 }
@@ -91,6 +85,7 @@ void free_tree(BT *tree) {
         for(i = 0; i < tree->children_count; i++){
             free_tree(tree->children[i]);
         }
+        free(tree->text);
         free(tree);
     }
 }
@@ -133,7 +128,7 @@ void print_dot(BT* tree) {
 
 // Dot output.
 char* node2str(BT* node) {
-    char* s = (char*)malloc(64 * sizeof(char));
+    char* s = (char*)malloc(32 * sizeof(char));
 
     switch(node->kind) {
         case NUMBER_NODE:               sprintf(s, "%s", "NUM"); break;

@@ -8,8 +8,9 @@ bison: parser.y
 flex: scanner.l
 	flex scanner.l
 
-gcc: scanner.c parser.c bt.c litTable.c symTable.c
-	gcc -Wall -o trab3 scanner.c parser.c litTable.c symTable.c bt.c -ly
+gcc: scanner.c parser.c bt.c litTable.c symTable.c interpreter.c
+	gcc -Wall -o trab4 scanner.c parser.c litTable.c symTable.c bt.c interpreter.c -ly
+	# valgrind ./trab4 < in/err1_01.cm
 
 clean:
 	@rm -f *.o *.output scanner.c parser.h parser.c parser *.dot *.pdf

@@ -10,6 +10,7 @@ typedef struct symNode {
 	int line;
 	int escopo;
 	int aridade;
+	int offset;
 	struct symNode* prox;
 } SymbolNode;
 
@@ -24,7 +25,7 @@ typedef struct symTable {
 SymbolsTable* create_sym_table(void);
 
 //adiciona simbolo a tabela
-int add_var(SymbolsTable* st, char* symbol, int line, int escopo, int aridade);
+int add_var(SymbolsTable* st, char* symbol, int line, int escopo, int aridade, int offset);
 
 //verifica se simbolo existe na tabela (retorna 1 se true e 0 se false)
 int lookup_var(SymbolsTable* st, char* symbol);
@@ -47,5 +48,9 @@ void print_functions_table(SymbolsTable* st);
 
 //desaloca espaco de memoria para tabela de simbolos
 void free_sym_table(SymbolsTable* st);
+
+void set_sym_offset(SymbolsTable *st, int index, int offset);
+
+int get_sym_offset(SymbolsTable *st, int index);
 
 #endif

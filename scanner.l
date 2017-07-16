@@ -23,27 +23,27 @@ extern LiteralsTable *lt;
 <comment>"*"+[^*/\n]* 		   {}
 <comment>"*"+"/"        	   { BEGIN(INITIAL); }
 
-"if"                     	   { yylval = create_node(IF_NODE); return IF; } /* Bloco 1: Palavras reservadas */
-"else"                   	   { yylval = create_node(ELSE_NODE); return ELSE; }
-"input"						   { yylval = create_node(INPUT_NODE); return INPUT;}
-"int"						   { yylval = create_node(INT_NODE); return INT;}
-"void"						   { yylval = create_node(VOID_NODE); return VOID; }
-"output"                       { yylval = create_node(OUTPUT_NODE); return OUTPUT; }
-"write"                        { yylval = create_node(WRITE_NODE); return WRITE; }
-"while" 	               	   { yylval = create_node(WHILE_NODE); return WHILE; }
-"return"					   { yylval = create_node(RETURN_NODE); return RETURN; }
+"if"                     	   { return IF; } /* Bloco 1: Palavras reservadas */
+"else"                   	   { return ELSE; }
+"input"						   { return INPUT;}
+"int"						   { return INT;}
+"void"						   { return VOID; }
+"output"                       { return OUTPUT; }
+"write"                        { return WRITE; }
+"while" 	               	   { return WHILE; }
+"return"					   { return RETURN; }
 
-"+"   				           { yylval = create_node(PLUS_NODE); return PLUS; } /* Bloco 2: Operadores aritméticos e de comparação */
-"-"   				           { yylval = create_node(MINUS_NODE); return MINUS; }
-"*"   				           { yylval = create_node(TIMES_NODE); return TIMES; }
-"/"   				           { yylval = create_node(OVER_NODE); return OVER; }
-"<"   				           { yylval = create_node(LT_NODE); return LT; }
-"<="   				           { yylval = create_node(LEQ_NODE); return LE; }
-">"   				           { yylval = create_node(GT_NODE); return GT; }
-">="   				           { yylval = create_node(GEQ_NODE); return GE; }
-"=="   				           { yylval = create_node(EQ_NODE); return EQ; }
-"!="   				           { yylval = create_node(NEQ_NODE); return NEQ; }
-"="		                   	   { yylval = create_node(ASSIGN_NODE); return ASSIGN; }
+"+"   				           { return PLUS; } /* Bloco 2: Operadores aritméticos e de comparação */
+"-"   				           { return MINUS; }
+"*"   				           { return TIMES; }
+"/"   				           { return OVER; }
+"<"   				           { return LT; }
+"<="   				           { return LE; }
+">"   				           { return GT; }
+">="   				           { return GE; }
+"=="   				           { return EQ; }
+"!="   				           { return NEQ; }
+"="		                   	   { return ASSIGN; }
 
 ";"   				           { return SEMI; } /* Bloco 3: Caracteres especiais */
 ","   				           { return COMMA; }

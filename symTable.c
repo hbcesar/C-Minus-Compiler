@@ -29,7 +29,7 @@ int lookup_var(SymbolsTable* st, char* symbol){
 	return 0;
 }
 
-int add_var(SymbolsTable* st, char* symbol, int line, int escopo, int aridade){
+int add_var(SymbolsTable* st, char* symbol, int line, int escopo, int aridade, int offset){
 
 	if (!lookup_var(st, symbol) || get_symbol_escope(st, symbol) != escopo) {
 		SymbolNode* node = (SymbolNode*) malloc(sizeof(SymbolNode));
@@ -37,6 +37,7 @@ int add_var(SymbolsTable* st, char* symbol, int line, int escopo, int aridade){
 		node->symbol = (char*) malloc(strlen(symbol) * sizeof(char));
 		strcpy(node->symbol, symbol);
 		node->line = line;
+		node->offset = offset;
 
 		if(escopo != -1){
 			node->escopo = escopo;
@@ -88,6 +89,7 @@ int get_symbol_escope(SymbolsTable* st, char* symbol){
 
 		slist = slist->prox;
 	}
+
 	return -1;
 }
 
@@ -102,6 +104,7 @@ int get_symbol_arity(SymbolsTable* st, char* symbol){
 
 		slist = slist->prox;
 	}
+
 	return -1;
 }
 
@@ -161,6 +164,32 @@ void print_functions_table(SymbolsTable* st){
 	return;
 }
 
+int get_sym_offset(SymbolsTable *st, int index) {
+	int i = 0;
+
+	SymbolNode *temp = st->table;
+
+	while (i < index) {
+		temp = temp->prox;
+		i++;
+	}
+
+	return temp->offset;
+}
+
+void set_sym_offset(SymbolsTable *st, int index, int offset) {
+	int i = 0;
+
+	SymbolNode *temp = st->table;
+
+	while (i < index) {
+		temp = temp->prox;
+		i++;
+	}
+
+	temp->offset = offset;
+}
+
 void free_sym_table(SymbolsTable* st){
 	SymbolNode* temp;
 
@@ -168,7 +197,10 @@ void free_sym_table(SymbolsTable* st){
 	{
 		temp = st->table;
 		st->table = st->table->prox;
+		free(temp->symbol);
 		free(temp);
 	}
+
+	free(st);
 	return;
 }

@@ -93,7 +93,10 @@ void free_literals_table(LiteralsTable* lt){
 
 	while (lt->table != NULL) {
 		temp = lt->table;
+		free(temp->literal);
 		lt->table = lt->table->prox;
 		free(temp);
 	}
+
+	free(lt);
 }
