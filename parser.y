@@ -39,6 +39,7 @@ LiteralsTable *lt; //tabela de literais
 int aridade_declarada = 0; //aridade declarada
 int aridade_chamada = 0; //aridade de chamada de funcao
 int escopo = 0; //escopo de variavel
+int last_index_func = 0;
 
 %}
 
@@ -77,11 +78,11 @@ func-decl-list:
 ;
 
 func-decl:
-	func-header func-body																  { escopo++; $$ = new_node(FUNC_DECL_NODE, 2, $1, $2); }
+	func-header func-body																  { escopo++; $$ = new_node(FUNC_DECL_NODE, 2, $1, $2); set_func_node(ft, last_index_func, $$);}
 ;
 
 func-header:
-  ret-type ID LPAREN params RPAREN											{ new_symbol(FUNCTION, $2, yylineno, -1, aridade_declarada, -1); aridade_declarada = 0;  BT* funcID = create_lit_node(ID_NODE, get_symbol_index(ft, $2->text, -1), $2->text); $$ = new_node(FUNC_HEADER_NODE, 3, $1, funcID, $4); free($2); }
+  ret-type ID LPAREN params RPAREN											{ new_symbol(FUNCTION, $2, yylineno, -1, aridade_declarada, -1); aridade_declarada = 0;  BT* funcID = create_lit_node(ID_NODE, get_symbol_index(ft, $2->text, -1), $2->text); $$ = new_node(FUNC_HEADER_NODE, 3, $1, funcID, $4); }
 ;
 
 func-body:
@@ -109,8 +110,8 @@ param-list:
 ;
 
 param:
-  INT ID																								{ aridade_declarada++; new_symbol(VARIABLE, $2, yylineno, escopo, -1, 1); $$ = new_leaf(SVAR_NODE, get_symbol_index(vt, $2->text, escopo)); free($2); }
-| INT ID LBRACK RBRACK																	{ aridade_declarada++; new_symbol(VARIABLE, $2, yylineno, escopo, -1, 0); $$ = new_leaf(CVAR_NODE, get_symbol_index(vt, $2->text, escopo)); free($2); }
+  INT ID																								{ aridade_declarada++; new_symbol(VARIABLE, $2, yylineno, escopo, -1, 1); $$ = new_leaf(SVAR_NODE, get_symbol_index(vt, $2->text, escopo)); }
+| INT ID LBRACK RBRACK																	{ aridade_declarada++; new_symbol(VARIABLE, $2, yylineno, escopo, -1, 0); $$ = new_leaf(CVAR_NODE, get_symbol_index(vt, $2->text, escopo)); }
 ;
 
 var-decl-list:
@@ -119,8 +120,8 @@ var-decl-list:
 ;
 
 var-decl:
-  INT ID SEMI																						{ new_symbol(VARIABLE, $2, yylineno, escopo, -1, 0); $$ = new_leaf(SVAR_NODE, get_symbol_index(vt, $2->text, escopo));  free($2); }
-| INT ID LBRACK NUM RBRACK SEMI													{ new_symbol(VARIABLE, $2, yylineno, escopo, -1, $4->data); BT* var_dec_node = new_leaf(CVAR_NODE, get_symbol_index(vt, $2->text, escopo)); $$ = add_child(var_dec_node, create_lit_node(NUM_NODE, $4->data, $4->text)); free($2); }
+  INT ID SEMI																						{ new_symbol(VARIABLE, $2, yylineno, escopo, -1, 0); $$ = new_leaf(SVAR_NODE, get_symbol_index(vt, $2->text, escopo)); }
+| INT ID LBRACK NUM RBRACK SEMI													{ new_symbol(VARIABLE, $2, yylineno, escopo, -1, $4->data); BT* var_dec_node = new_leaf(CVAR_NODE, get_symbol_index(vt, $2->text, escopo)); $$ = add_child(var_dec_node, create_lit_node(NUM_NODE, $4->data, $4->text)); }
 ;
 
 block:
@@ -183,7 +184,7 @@ output-call:
 ;
 
 write-call:
-  WRITE LPAREN STRING RPAREN														{ $$ = new_node(WRITE_NODE, 1, create_lit_node(STRING_NODE, get_literal_index(lt, $3->text), $3->text)); free($3); }
+  WRITE LPAREN STRING RPAREN														{ $$ = new_node(WRITE_NODE, 1, create_lit_node(STRING_NODE, get_literal_index(lt, $3->text), $3->text)); }
 ;
 
 user-func-call:
@@ -212,7 +213,7 @@ bool-expr:
 
 //Regra foi unificada para eliminar shift-reduce
  arith-expr: 
-  NUM                                                   { $$ = create_lit_node(NUM_NODE, -1, $1->text); free($1); }
+  NUM                                                   { $$ = create_lit_node(NUM_NODE, -1, $1->text); }
 | input-call																						{ $$ = $1; }
 | lval																									{ $$ = $1; }
 | user-func-call																				{ $$ = $1; }
@@ -295,6 +296,7 @@ void new_symbol(int type, BT* node, int line, int escopo, int aridade_declarada,
     }
 
     add_var(ft, node->text, line, escopo, aridade_declarada, offset);
+    last_index_func = get_table_size(ft);
 
   }
 }

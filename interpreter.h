@@ -89,4 +89,9 @@ void rec_run_ast(BT*);
 
 void run_ast(BT*);
 
+//------- STRING HANDLING --------
+void remove_char(char*, char);
+void remove_linebreak(char*);
+	
+
 #endif

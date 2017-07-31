@@ -7,6 +7,7 @@
 #include <stdlib.h>
 
 extern SymbolsTable *vt;
+extern SymbolsTable *ft;
 extern LiteralsTable *lt;
 
 // ------------------------- PILHA ----------------------------------------
@@ -14,18 +15,24 @@ extern LiteralsTable *lt;
 #define STACK_SIZE 100
 
 int stack[STACK_SIZE];
-int sp = -1; // stack pointer
+int sp = -1; //stack pointer
 int op = 0; //offset pointer
 
 void push(int x)
 {
 	sp++;
-	stack[sp] = x;
+	
+	if(sp >= STACK_SIZE) {
+		printf("ERROR: Stack is full. Could not push.\n");
+		exit(1);
+	} else {
+		stack[sp] = x;	
+	}
 }
 
 int pop(){
-	if(sp == -1) {
-		printf("Pop no stack mas nao tem nenhum menino no stack");
+	if(sp < 0) {
+		printf("ERROR: Stack is empty. Could not pop.\n");
 		exit(1);
 	}
 
@@ -33,7 +40,9 @@ int pop(){
 }
 
 void init_stack() {
-	for (int i = 0; i < STACK_SIZE; i++) {
+	int i = 0;
+
+	for (i = 0; i < STACK_SIZE; i++) {
 		stack[i] = 0;
 	}
 }
@@ -41,7 +50,9 @@ void init_stack() {
 void print_stack() {
 	printf("STACK: ");
 
-	for (int i = 0; i <= sp; i++) {
+	int i;
+
+	for (i = 0; i <= sp; i++) {
 		printf("%d / ", stack[i]);
 	}
 
@@ -60,17 +71,28 @@ int increment_offset(int n) {
 int mem[MEM_SIZE];
 
 void store(int endereco, int val){
+	if(endereco < 0 || endereco > MEM_SIZE) {
+		printf("STORE: Invalid memory adress, aborting.\n");
+		exit(1);
+	}
+	
 	mem[endereco] = val;
 }
 
 int load(int endereco){
+	if(endereco < 0 || endereco > MEM_SIZE) {
+		printf("LOAD: Invalid memory adress, aborting.\n");
+		exit(1);
+	}
+
 	return mem[endereco];
 }
 
 void init_mem() {
-  for (int addr = 0; addr < MEM_SIZE; addr++) {
-    mem[addr] = 0;
-  }
+	int addr;
+	for (addr = 0; addr < MEM_SIZE; addr++) {
+		mem[addr] = 0;
+	}
 }
 
 
@@ -84,37 +106,39 @@ void run_func_decl_list(BT* node) {
 	//trace_msg("func_decl_list");
 
 	int size = node->children_count;
+	int i;
 
-	for (int i = 0; i < size; i++) {
+	for (i = 0; i < size; i++) {
 		rec_run_ast(node->children[i]);
 	}
 }
 
 void run_func_decl(BT* node) {
 	//trace_msg("func_decl");
-
+	int last = node->children_count - 1;
+	
+	int op_copy = op;
 	rec_run_ast(node->children[0]);
-	rec_run_ast(node->children[1]);
+	rec_run_ast(node->children[last]);
+	op = op_copy;
 }
 
 void run_func_header(BT* node) {
 	//trace_msg("func_header");
 
 	int size = node->children_count;
-  	if(node->children[size - 1]->kind != VOID_NODE) {
-  		rec_run_ast(node->children[size - 1]);
-  	}
-}
 
-void run_param_list(BT* node) {
-	//trace_msg("param_list");
+	if(node->children[size - 1]->kind != VOID_NODE) {
+		rec_run_ast(node->children[size - 1]);
+	}
 }
 
 void run_func_body(BT* node) {
 	//trace_msg("func_body");
+	int last = node->children_count - 1;
 
-	rec_run_ast(node->children[0]); //VAR LIST
-	rec_run_ast(node->children[1]); //STMT LIST
+	rec_run_ast(node->children[0]); //Var List
+	rec_run_ast(node->children[last]); //Block
 }
 
 void run_var_list(BT* node) {
@@ -126,9 +150,11 @@ void run_var_list(BT* node) {
 	for(i = 0; i < size; i++){
 		if(node->children[i]->kind == SVAR_NODE) {
 			set_sym_offset(vt, node->children[i]->data, increment_offset(1));
+
 		} else if(node->children[i]->kind == CVAR_NODE) {
+			set_sym_offset(vt, node->children[i]->data, op);
 			rec_run_ast(node->children[i]->children[0]);
-			set_sym_offset(vt, node->children[i]->data, increment_offset(pop()));
+			increment_offset(pop());
 		}
 	}
 }
@@ -137,8 +163,9 @@ void run_stmt_list(BT* node) {
 	//trace_msg("stmt_list");
 
 	int size = node->children_count;
+	int i;
 
-	for (int i = 0; i < size; i++) {
+	for (i = 0; i < size; i++) {
 		rec_run_ast(node->children[i]);
 	}
 }
@@ -171,10 +198,12 @@ void run_write(BT* node) {
 	
 	strcpy(str, get_literal(lt, child->data));
 	
-	//remove_all_chars(str, '\"');
-	//linebreak_replace(str);
+	remove_char(str, '\"');
+	remove_linebreak(str);
 	
 	printf("%s", str);
+
+	free(str);
 }
 
 void run_assign(BT* node) {
@@ -185,11 +214,16 @@ void run_assign(BT* node) {
 	if(node->children[0]->kind == SVAR_NODE) {
 		int offset = get_sym_offset(vt, node->children[0]->data);
 		store(offset, pop());
+
 	} else if(node->children[0]->kind == CVAR_NODE) {
 		rec_run_ast(node->children[0]->children[0]);
 
 		int offset = get_sym_offset(vt, node->children[0]->data) + pop();
 		store(offset, pop());
+
+	} else {
+		printf("Invalid variable type\n");
+		exit(1);
 	}
 }
 
@@ -212,7 +246,7 @@ void run_cvar(BT* node) {
 	rec_run_ast(node->children[0]);
 
 	int offset = get_sym_offset(vt, node->data) + pop();
-	store(offset, pop());
+	push(load(offset));
 }
 
 void run_plus(BT* node) {
@@ -351,150 +385,237 @@ void run_if(BT* node) {
 void run_while(BT* node) {
 	//trace_msg("while");
 
-	rec_run_ast(node->children[0]); // Test
+	rec_run_ast(node->children[0]); // Teste
 	int w = pop();
 
 	while (w) {
 		rec_run_ast(node->children[1]);
-		rec_run_ast(node->children[0]); // Test
+		rec_run_ast(node->children[0]); // Teste
 		w = pop();
 	}
 }
 
-void run_fcall(BT* node) {}
+//-----------------------NAO ESTAO 100% --------------------------------
+void run_param_list(BT* node) {
+	//trace_msg("param_list");
 
-void run_arg_list(BT* node) {}
+	int size = node->children_count;
+	int i;
+
+	for(i = 0; i < size; i++) {
+		BT* aux = node->children[i];
+		if(aux->kind == SVAR_NODE) {
+			set_sym_offset(vt, aux->data, op++);
+		}
+	}
+	
+	size = size - 1;
+	BT* aux = node->children[size];
+	
+	while(size >= 0){
+
+		if(aux->kind == CVAR_NODE){ //referencia
+			int temp = pop(); //index
+      		pop();//data
+      		set_sym_offset(vt, aux->data, get_sym_offset(vt, temp));
+		} else { //por copia
+      		pop();//index
+			int temp = pop();//data
+			store(get_sym_offset(vt, aux->data), temp);
+		}
+		
+		size--;
+		aux = node->children[size];
+	}
+}
+
+
+void run_fcall(BT* node) {
+	//trace_msg("fcall");
+
+	//arg list
+	rec_run_ast(node->children[0]);
+	
+  	//execute the func
+	BT* func = get_func_node(ft, node->data);
+	rec_run_ast(func);
+}
+
+
+void run_arg_list(BT* node) {
+	//trace_msg("arg-list");
+
+	int size = node->children_count;
+	int i;
+
+	for (i = 0; i < size; i++) {
+		rec_run_ast(node->children[i]);
+		push(node->children[i]->data); //index
+	}
+}
 
 void run_return(BT* node) {
-	//implementar e testar o c11
+	//trace_msg("return");
+
+	rec_run_ast(node->children[0]);
+
 }
+
+//--------------------------------------------------------------------
 
 void rec_run_ast(BT* node) {
 	switch (node->kind) {
 		case FUNC_DECL_LIST_NODE:
-			run_func_decl_list(node);
+		run_func_decl_list(node);
 		break;
 
 		case FUNC_DECL_NODE:
-			run_func_decl(node);
+		run_func_decl(node);
 		break;
 
 		case FUNC_HEADER_NODE:
-			run_func_header(node);
+		run_func_header(node);
 		break;
 
 		case PARAM_NODE:
-			run_param_list(node);
+		run_param_list(node);
 		break;
 
 		case FUNC_BODY_NODE:
-			run_func_body(node);
+		run_func_body(node);
 		break;
 
 		case VAR_LIST_NODE:
-			run_var_list(node);
+		run_var_list(node);
 		break;
 
 		case STMT_LIST_NODE:
-			run_stmt_list(node);
+		run_stmt_list(node);
 		break;
 		
 		case INPUT_NODE:
-			run_input(node);
+		run_input(node);
 		break;
 		
 		case OUTPUT_NODE:
-			run_output(node);
+		run_output(node);
 		break;
 		
 		case WRITE_NODE:
-			run_write(node);
+		run_write(node);
 		break;
 		
 		case ASSIGN_NODE:
-			run_assign(node);
+		run_assign(node);
 		break;
 		
 		case NUM_NODE:
-			run_num(node);
+		run_num(node);
 		break;
 		
 		case SVAR_NODE:
-			run_svar(node);
+		run_svar(node);
 		break;
 		
 		case CVAR_NODE:
-			run_cvar(node);
+		run_cvar(node);
 		break;
 		
 		case PLUS_NODE:
-			run_plus(node);
+		run_plus(node);
 		break;
 		
 		case MINUS_NODE:
-			run_minus(node);
+		run_minus(node);
 		break;
 		
 		case TIMES_NODE:
-			run_times(node);
+		run_times(node);
 		break;
 		
 		case OVER_NODE:
-			run_over(node);
+		run_over(node);
 		break;
 		
 		case LT_NODE:
-			run_lt(node);
+		run_lt(node);
 		break;
 		
 		case LEQ_NODE:
-			run_leq(node);
+		run_leq(node);
 		break;
 		
 		case GT_NODE:
-			run_gt(node);
+		run_gt(node);
 		break;
 		
 		case GEQ_NODE:
-			run_geq(node);
+		run_geq(node);
 		break;
 		
 		case EQ_NODE:
-			run_eq(node);
+		run_eq(node);
 		break;
 		
 		case NEQ_NODE:
-			run_neq(node);
+		run_neq(node);
 		break;
 		
 		case IF_NODE:
-			run_if(node);
+		run_if(node);
 		break;
 		
 		case WHILE_NODE:
-			run_while(node);
+		run_while(node);
 		break;
 		
 		case FCALL_NODE:
-			run_fcall(node);
+		run_fcall(node);
 		break;
 		
 		case ARG_LIST_NODE:
-			run_arg_list(node);
+		run_arg_list(node);
 		break;
 
 		case RETURN_NODE:
-			run_return(node);
+		run_return(node);
 		break;
 		
 		default:
-			fprintf(stderr, "Invalid kind: %s!\n", node2str(node));
-			exit(1);
+		fprintf(stderr, "Invalid kind: %s!\n", node2str(node));
+		exit(1);
 	}
 }
 
+// -------------- Funcoes para Tratar String ------------------
+//Retirado de: https://stackoverflow.com/questions/5457608/how-to-remove-the-character-at-a-given-index-from-a-string-in-c
+void remove_char(char *str, char garbage) {
+	char *src, *dst;
+
+	for (src = dst = str; *src != '\0'; src++) {
+		*dst = *src;
+		if (*dst != garbage) dst++;
+	}
+
+	*dst = '\0';
+}
+
+//Retirado de: https://stackoverflow.com/questions/1515195/how-to-remove-n-or-t-from-a-given-string-in-c
+void remove_linebreak(char* str){
+	char* i;
+	for (i = str; *i; i++) {
+		if (*i == '\\' && *(i + 1) == 'n') {
+			*i = '\n';
+			*(i + 1) = '\6';
+		}
+	}
+
+	remove_char(str, '\6');
+}
+
+
 void run_ast(BT* node) {
-  init_stack();
-  init_mem();
-  rec_run_ast(node);
+	init_stack();
+	init_mem();
+	rec_run_ast(node);
 }

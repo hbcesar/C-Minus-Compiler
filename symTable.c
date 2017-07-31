@@ -204,3 +204,50 @@ void free_sym_table(SymbolsTable* st){
 	free(st);
 	return;
 }
+
+BT* get_func_node(SymbolsTable *st, int index) {
+	int i = 0;
+
+	SymbolNode *temp = st->table;
+
+	while (i < index) {
+		temp = temp->prox;
+		i++;
+	}
+
+	return temp->node;
+}
+
+void set_func_node(SymbolsTable *st, int index, BT* node) {
+	int i = 0;
+
+	if(st == NULL){
+		return;
+	}
+
+	SymbolNode *temp = st->table;
+
+	while (temp != NULL && i < index) {
+		temp = temp->prox;
+		i++;
+	}
+
+	temp->node = node;
+}
+
+int get_table_size(SymbolsTable *st){
+	int i = 0;
+
+	if(st == NULL){
+		return 0;
+	}
+
+	SymbolNode *temp = st->table;
+
+	while (temp != NULL) {
+		temp = temp->prox;
+		i++;
+	}
+
+	return i - 1;
+}

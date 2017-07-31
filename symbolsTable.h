@@ -12,6 +12,7 @@ typedef struct symNode {
 	int aridade;
 	int offset;
 	struct symNode* prox;
+	BT* node;
 } SymbolNode;
 
 //estrutura para tabela de simbolos
@@ -49,8 +50,15 @@ void print_functions_table(SymbolsTable* st);
 //desaloca espaco de memoria para tabela de simbolos
 void free_sym_table(SymbolsTable* st);
 
+//seta offset para um simbolo da tabela
 void set_sym_offset(SymbolsTable *st, int index, int offset);
 
+//obtem offset para um simbolo da tabela
 int get_sym_offset(SymbolsTable *st, int index);
+
+//na tentativa de fazer func_call funcionar, seta ou pega o no de uma funcao
+void set_func_node(SymbolsTable *st, int index, BT* node);
+BT* get_func_node(SymbolsTable *st, int index);
+int get_table_size(SymbolsTable *st);
 
 #endif
