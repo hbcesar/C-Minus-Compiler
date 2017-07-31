@@ -1,3 +1,0 @@
-new_node vira create_node
-new_custom_node vira new_leaf
-new_subtree vira new_node
