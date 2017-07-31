@@ -1,5 +1,0 @@
-// First program in C-Minus
-
-void main(void) {
-    write("Hello, World!\n");
-}

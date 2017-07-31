@@ -1,6 +1,0 @@
-// Program with lexical errors.
-
-void main(void) {
-    int x;
-    x = 4.2; // ERROR: We don't accept float numbers.
-}

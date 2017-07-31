@@ -1,5 +1,0 @@
-// Program with semantic errors.
-
-void main(void) {
-    output("Hello!\n"); // ERROR: function 'output' expects an int var, should use 'write'.
-}
